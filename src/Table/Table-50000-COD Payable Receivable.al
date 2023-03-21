@@ -18,10 +18,11 @@ table 50000 "COD Payable/Receivable"
             Caption = 'Tracking No';
             DataClassification = ToBeClassified;
         }
-        field(4; "COD Client Payable Code"; Code[20])
+        field(4; "COD Customer Code"; Code[20])
         {
             Caption = 'COD Client Payable Code';
             DataClassification = ToBeClassified;
+            TableRelation = Customer."No.";
         }
         field(5; "COD Vendor Code"; Code[20])
         {
@@ -75,11 +76,12 @@ table 50000 "COD Payable/Receivable"
             TableRelation = "Dimension Value".Code WHERE("Global Dimension No." = CONST(2),
                                                           Blocked = CONST(false));
         }
-        field(14;Select;Boolean)
+        field(14; Select; Boolean)
         {
-            Caption='Select';
-            DataClassification=ToBeClassified;
+            Caption = 'Select';
+            DataClassification = ToBeClassified;
         }
+
     }
     keys
     {

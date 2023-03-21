@@ -1,6 +1,6 @@
-table 50001 "Client/Vendor Invoice Booking"
+table 50001 "Customer/Vendor Inv. Booking"
 {
-    Caption = 'Client/Vendor Invoice Booking';
+    Caption = 'Customer/Vendor Inv. Booking';
     DataClassification = ToBeClassified;
 
     fields
@@ -26,7 +26,7 @@ table 50001 "Client/Vendor Invoice Booking"
             Caption = 'Tracking No';
             DataClassification = ToBeClassified;
         }
-        field(5; "Client Code"; Code[20])
+        field(5; "Customer Code"; Code[20])
         {
             Caption = 'Client Code';
             DataClassification = ToBeClassified;
@@ -122,10 +122,10 @@ table 50001 "Client/Vendor Invoice Booking"
             DataClassification = ToBeClassified;
             TableRelation = "Ship-to Address".Code;
         }
-        field(22;Select;Boolean)
+        field(22; Select; Boolean)
         {
-            Caption='Select';
-            DataClassification=ToBeClassified;
+            Caption = 'Select';
+            DataClassification = ToBeClassified;
         }
     }
     keys

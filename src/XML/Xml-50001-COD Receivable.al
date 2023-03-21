@@ -1,9 +1,10 @@
 xmlport 50001 "COD Receivalble"
 {
     Caption = 'COD Payable';
+    DefaultFieldsValidation = true;
     Direction = Import;
     Format = VariableText;
-    UseRequestPage = false;
+    FormatEvaluate = Legacy;
     schema
     {
         textelement(RootNodeName)
@@ -47,6 +48,12 @@ xmlport 50001 "COD Receivalble"
                 fieldelement(BusinessVerticalG2; CODPayableReceivable."Business Vertical (G2)")
                 {
                 }
+                trigger OnAfterInitRecord()
+                begin
+                    I += 1;
+                    IF I = 1 THEN
+                        currXMLport.SKIP;
+                end;
             }
         }
 
@@ -78,12 +85,18 @@ xmlport 50001 "COD Receivalble"
 
     trigger OnInitXmlPort()
     begin
-        if firstline then begin
-            firstline := false;
-            currXMLport.Skip();
-        end;
+        // if firstline then begin
+        //     firstline := false;
+        //     currXMLport.Skip();
+        // end;
+    end;
+
+    trigger OnPostXmlPort()
+    begin
+        Message('Done');
     end;
 
     var
         firstline: Boolean;
+        I: Integer;
 }

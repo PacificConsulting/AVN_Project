@@ -10,6 +10,7 @@
   "help": "",
   "url": "",
   "logo": "",
+
   "dependencies": [
     {
       "id": "db643212-b7fb-4dd4-b5a8-cb44ac714461",
@@ -85,6 +86,7 @@
     "includeSourceInSymbolFile": true
   },
   "runtime": "10.0",
+  
   "features": [
     "NoImplicitWith"
   ]

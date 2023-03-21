@@ -1,9 +1,9 @@
-page 50001 "Client/Vendor Invoice Booking"
+page 50001 "Customer/Vendor Inv. Booking"
 {
     ApplicationArea = All;
-    Caption = 'Client/Vendor Invoice Booking';
+    Caption = 'Customer/Vendor Invoice Booking';
     PageType = List;
-    SourceTable = "Client/Vendor Invoice Booking";
+    SourceTable = "Customer/Vendor Inv. Booking";
     UsageCategory = Lists;
 
     layout
@@ -32,7 +32,7 @@ page 50001 "Client/Vendor Invoice Booking"
                 {
                     ToolTip = 'Specifies the value of the Vendor Code field.';
                 }
-                field("Client Code"; Rec."Client Code")
+                field("Client Code"; Rec."Customer Code")
                 {
                     ToolTip = 'Specifies the value of the Client Code field.';
                 }
@@ -104,4 +104,29 @@ page 50001 "Client/Vendor Invoice Booking"
             }
         }
     }
+    actions
+    {
+        area(Processing)
+        {
+            action("Create Journal")
+            {
+                Caption = 'Create Journal';
+                Image = Post;
+                Promoted = true;
+                PromotedIsBig = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+                trigger OnAction()
+                begin
+                    GenerateJournal();
+                end;
+            }
+        }
+    }
+    local procedure GenerateJournal()
+    var
+        myInt: Integer;
+    begin
+
+    end;
 }

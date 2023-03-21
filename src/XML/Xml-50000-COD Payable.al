@@ -1,9 +1,12 @@
 xmlport 50000 "COD Payable"
 {
     Caption = 'COD Payable';
+    DefaultFieldsValidation = true;
     Direction = Import;
     Format = VariableText;
-    UseRequestPage = false;
+    FormatEvaluate = Legacy;
+
+
     schema
     {
         textelement(RootNodeName)
@@ -20,7 +23,7 @@ xmlport 50000 "COD Payable"
                 fieldelement(TrackingNo; CODPayableReceivable."Tracking No")
                 {
                 }
-                fieldelement(CODClientPayableCode; CODPayableReceivable."COD Client Payable Code")
+                fieldelement(CODClientPayableCode; CODPayableReceivable."COD Customer Code")
                 {
                 }
                 fieldelement(PortalReportNumber; CODPayableReceivable."Portal Report Number ")
@@ -47,6 +50,22 @@ xmlport 50000 "COD Payable"
                 fieldelement(BusinessVerticalG2; CODPayableReceivable."Business Vertical (G2)")
                 {
                 }
+
+                // trigger OnAfterGetRecord()
+                // begin
+                //     if firstline then begin
+                //         firstline := false;
+                //         currXMLport.Skip();
+                //     end;
+                // end;
+                trigger OnAfterInitRecord()
+                begin
+                    I += 1;
+                    IF I = 1 THEN
+                        currXMLport.SKIP;
+                end;
+
+
             }
         }
 
@@ -71,19 +90,20 @@ xmlport 50000 "COD Payable"
     }
 
     // Initialize the flag on pre-xmlport event
-    trigger OnPreXmlPort()
+    // trigger OnPreXmlPort()
+    // begin
+    //     firstline := true;
+    // end;
+
+
+    trigger OnPostXmlPort()
     begin
-        firstline := true;
+        Message('Done');
     end;
 
-    trigger OnInitXmlPort()
-    begin
-        if firstline then begin
-            firstline := false;
-            currXMLport.Skip();
-        end;
-    end;
+
 
     var
         firstline: Boolean;
+        I: Integer;
 }

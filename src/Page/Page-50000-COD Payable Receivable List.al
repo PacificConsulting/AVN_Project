@@ -24,7 +24,7 @@ page 50000 "COD Payable Receivable List"
                 {
                     ToolTip = 'Specifies the value of the Tracking No field.';
                 }
-                field("COD Client Payable Code"; Rec."COD Client Payable Code")
+                field("COD Client Payable Code"; Rec."COD Customer Code")
                 {
                     ToolTip = 'Specifies the value of the COD Client Payable Code field.';
                 }
@@ -72,4 +72,87 @@ page 50000 "COD Payable Receivable List"
             }
         }
     }
+    actions
+    {
+        area(Processing)
+        {
+            action("Create Journal Voucher")
+            {
+                Caption = 'Create Journal Voucher';
+                Image = Post;
+                Promoted = true;
+                PromotedIsBig = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+                trigger OnAction()
+                begin
+                    GenerateJournalVoucher();
+                end;
+            }
+        }
+    }
+    local procedure GenerateJournalVoucher()
+    var
+        GenJourLine: record 81;
+        NoSeriesMgt: Codeunit 396;
+        BankAcc: Record 270;
+    begin
+        IF Rec."COD Customer Code" <> '' then begin
+            GenJourLine.Reset();
+            GenJourLine.SetRange("Journal Template Name", 'JOURNALV');
+            GenJourLine.SetRange("Journal Batch Name", 'USER-A');
+            GenJourLine.Init();
+            GenJourLine."Document No." := NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
+            GenJourLine."Posting Date" := Today;
+            IF GenJourLine.FindLast() then
+                GenJourLine."Line No." := GenJourLine."Line No." + 10000
+            else
+                GenJourLine."Line No." := 10000;
+
+            GenJourLine."Journal Template Name" := 'JOURNALV';
+            GenJourLine."Journal Batch Name" := 'USER-A';
+            GenJourLine."Account Type" := GenJourLine."Account Type"::Customer;
+            GenJourLine.validate("Account No.", rec."COD Customer Code");
+            GenJourLine."Bal. Account Type" := GenJourLine."Bal. Account Type"::"G/L Account";
+            GenJourLine.Validate("Bal. Account No.", Rec."Ledger Code");
+            //GenJourLine."GST Group Code" := 'Goods';
+            GenJourLine.validate(Amount, Rec."COD Amount ");
+            GenJourLine.validate("Shortcut Dimension 1 Code", rec."Branch (G1)");
+            GenJourLine.validate("Shortcut Dimension 2 Code", rec."Business Vertical (G2)");
+            GenJourLine.Comment := 'Auto Post';
+            GenJourLine.Insert(true);
+            Message('Journal Voucher created with Document No. %1', GenJourLine."Document No.");
+        end else
+            if Rec."COD Vendor Code" <> '' then begin
+                GenJourLine.Reset();
+                GenJourLine.SetRange("Journal Template Name", 'JOURNALV');
+                GenJourLine.SetRange("Journal Batch Name", 'USER-A');
+                GenJourLine.Init();
+                GenJourLine."Document No." := NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
+                GenJourLine."Posting Date" := Today;
+                IF GenJourLine.FindLast() then
+                    GenJourLine."Line No." := GenJourLine."Line No." + 10000
+                else
+                    GenJourLine."Line No." := 10000;
+
+                GenJourLine."Journal Template Name" := 'JOURNALV';
+                GenJourLine."Journal Batch Name" := 'USER-A';
+                GenJourLine."Account Type" := GenJourLine."Account Type"::Vendor;
+                GenJourLine.validate("Account No.", rec."COD Vendor Code");
+                GenJourLine."Bal. Account Type" := GenJourLine."Bal. Account Type"::"G/L Account";
+                GenJourLine.Validate("Bal. Account No.", Rec."Ledger Code");
+                //GenJourLine."GST Group Code" := 'Goods';
+                GenJourLine.validate(Amount, Rec."COD Amount ");
+                GenJourLine.validate("Shortcut Dimension 1 Code", rec."Branch (G1)");
+                GenJourLine.validate("Shortcut Dimension 2 Code", rec."Business Vertical (G2)");
+                GenJourLine.Comment := 'Auto Post';
+                GenJourLine.Insert(true);
+                Message('Journal Voucher created with Document No. %1', GenJourLine."Document No.");
+            end;
+
+        // IF Not CODEUNIT.RUN(CODEUNIT::"Gen. Jnl.-Post", GenJourLine) then begin
+
+        //end;
+
+    end;
 }

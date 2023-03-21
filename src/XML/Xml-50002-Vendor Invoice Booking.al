@@ -1,14 +1,15 @@
 xmlport 50002 "Vendor Invoice Booking"
 {
     Caption = 'Vendor Invoice Booking';
+    DefaultFieldsValidation = true;
     Direction = Import;
     Format = VariableText;
-    UseRequestPage = false;
+    FormatEvaluate = Legacy;
     schema
     {
         textelement(RootNodeName)
         {
-            tableelement(ClientVendorInvoiceBooking; "Client/Vendor Invoice Booking")
+            tableelement(ClientVendorInvoiceBooking; "Customer/Vendor Inv. Booking")
             {
                 XmlName = 'Import';
                 fieldelement(AVNDocumentNo; ClientVendorInvoiceBooking."AVN Document No.")
@@ -62,6 +63,12 @@ xmlport 50002 "Vendor Invoice Booking"
                 fieldelement(BusinessVerticalG2; ClientVendorInvoiceBooking."Business Vertical (G2)")
                 {
                 }
+                trigger OnAfterInitRecord()
+                begin
+                    I += 1;
+                    IF I = 1 THEN
+                        currXMLport.SKIP;
+                end;
             }
         }
     }
@@ -84,19 +91,13 @@ xmlport 50002 "Vendor Invoice Booking"
         }
     }
     // Initialize the flag on pre-xmlport event
-    trigger OnPreXmlPort()
-    begin
-        firstline := true;
-    end;
 
-    trigger OnInitXmlPort()
+    trigger OnPostXmlPort()
     begin
-        if firstline then begin
-            firstline := false;
-            currXMLport.Skip();
-        end;
+        Message('Done');
     end;
 
     var
         firstline: Boolean;
+        I: Integer;
 }

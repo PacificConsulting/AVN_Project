@@ -1,14 +1,15 @@
 xmlport 50003 "Client invoice Booking"
 {
     Caption = 'Client invoice Booking';
+    DefaultFieldsValidation = true;
     Direction = Import;
     Format = VariableText;
-    UseRequestPage = false;
+    FormatEvaluate = Legacy;
     schema
     {
         textelement(RootNodeName)
         {
-            tableelement(ClientVendorInvoiceBooking; "Client/Vendor Invoice Booking")
+            tableelement(ClientVendorInvoiceBooking; "Customer/Vendor Inv. Booking")
             {
                 XmlName = 'Import';
                 fieldelement(AVNDocumentNo; ClientVendorInvoiceBooking."AVN Document No.")
@@ -23,7 +24,7 @@ xmlport 50003 "Client invoice Booking"
                 fieldelement(ShipyaariIDNo; ClientVendorInvoiceBooking."Shipyaari ID No.")
                 {
                 }
-                fieldelement(ClientCode; ClientVendorInvoiceBooking."Client Code")
+                fieldelement(ClientCode; ClientVendorInvoiceBooking."Customer Code")
                 {
                 }
                 fieldelement(BranchforGSTLocation; ClientVendorInvoiceBooking."Branch for GST (Location)")
@@ -56,6 +57,12 @@ xmlport 50003 "Client invoice Booking"
                 fieldelement(SalesPerson; ClientVendorInvoiceBooking."Sales Person")
                 {
                 }
+                trigger OnAfterInitRecord()
+                begin
+                    I += 1;
+                    IF I = 1 THEN
+                        currXMLport.SKIP;
+                end;
             }
         }
     }
@@ -78,19 +85,13 @@ xmlport 50003 "Client invoice Booking"
         }
     }
     // Initialize the flag on pre-xmlport event
-    trigger OnPreXmlPort()
-    begin
-        firstline := true;
-    end;
 
-    trigger OnInitXmlPort()
+    trigger OnPostXmlPort()
     begin
-        if firstline then begin
-            firstline := false;
-            currXMLport.Skip();
-        end;
+        Message('Done');
     end;
 
     var
         firstline: Boolean;
+        I: Integer;
 }
