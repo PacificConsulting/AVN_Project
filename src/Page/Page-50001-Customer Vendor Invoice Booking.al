@@ -125,8 +125,73 @@ page 50001 "Customer/Vendor Inv. Booking"
     }
     local procedure GenerateJournal()
     var
-        myInt: Integer;
+        GenJourLine: record 81;
+        NoSeriesMgt: Codeunit 396;
+        BankAcc: Record 270;
     begin
+        IF Rec."Customer Code" <> '' then begin
+            GenJourLine.Reset();
+            GenJourLine.SetRange("Journal Template Name", 'SALES');
+            GenJourLine.SetRange("Journal Batch Name", 'DEFAULT');
+            GenJourLine.Init();
+            GenJourLine."Document No." := Rec."AVN Document No.";//NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
+            GenJourLine."Posting Date" := Rec."Posting Date";
+            IF GenJourLine.FindLast() then
+                GenJourLine."Line No." := GenJourLine."Line No." + 10000
+            else
+                GenJourLine."Line No." := 10000;
 
+            GenJourLine."Journal Template Name" := 'SALES';
+            GenJourLine."Journal Batch Name" := 'DEFAULT';
+            GenJourLine."Document Type" := GenJourLine."Document Type"::Invoice;
+            GenJourLine."Account Type" := GenJourLine."Account Type"::Customer;
+            GenJourLine.validate("Account No.", rec."Customer Code");
+            GenJourLine."Bal. Account Type" := GenJourLine."Bal. Account Type"::"G/L Account";
+            GenJourLine.Validate("Bal. Account No.", rec."Ledger Code");
+            GenJourLine."Sales Invoice Type" := GenJourLine."Sales Invoice Type"::Taxable;
+            GenJourLine.Validate("GST Group Code", rec."GST Group");
+            GenJourLine.Validate("HSN/SAC Code", rec.SAC);
+            //GenJourLine."GST Group Code" := 'Goods';
+            GenJourLine.validate(Amount, Rec."Amount Before GST");
+            GenJourLine.validate("Location Code", rec."Branch for GST (Location)");
+            GenJourLine.validate("Shortcut Dimension 1 Code", rec."Branch (G1)");
+            GenJourLine.validate("Shortcut Dimension 2 Code", rec."Business Vertical (G2)");
+            GenJourLine.Comment := 'Auto Post';
+            GenJourLine.Insert(true);
+            Message('Journal Voucher created with Document No. %1', GenJourLine."Document No.");
+        end else
+            IF Rec."Vendor Code" <> '' then begin
+                GenJourLine.Reset();
+                GenJourLine.SetRange("Journal Template Name", 'PURCHJNL');
+                GenJourLine.SetRange("Journal Batch Name", 'DEFAULT');
+                GenJourLine.Init();
+                GenJourLine."Document No." := Rec."AVN Document No.";//NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
+                GenJourLine."Posting Date" := Rec."Posting Date";
+                IF GenJourLine.FindLast() then
+                    GenJourLine."Line No." := GenJourLine."Line No." + 10000
+                else
+                    GenJourLine."Line No." := 10000;
+
+                GenJourLine."Journal Template Name" := 'PURCHJNL';
+                GenJourLine."Journal Batch Name" := 'DEFAULT';
+                GenJourLine."Document Type" := GenJourLine."Document Type"::Invoice;
+                GenJourLine."Account Type" := GenJourLine."Account Type"::Vendor;
+                GenJourLine.validate("Account No.", rec."Vendor Code");
+                GenJourLine."Bal. Account Type" := GenJourLine."Bal. Account Type"::"G/L Account";
+                GenJourLine.Validate("Bal. Account No.", rec."Ledger Code");
+                GenJourLine."Sales Invoice Type" := GenJourLine."Sales Invoice Type"::Taxable;
+                GenJourLine.Validate("GST Group Code", rec."GST Group");
+                GenJourLine.Validate("HSN/SAC Code", rec.SAC);
+                GenJourLine.Validate("GST Vendor Type", GenJourLine."GST Vendor Type"::Registered);
+                GenJourLine.Validate("GST Credit", GenJourLine."GST Credit"::Availment);
+                //GenJourLine."GST Group Code" := 'Goods';
+                GenJourLine.validate(Amount, Rec."Amount Before GST");
+                GenJourLine.validate("Location Code", rec."Branch for GST (Location)");
+                GenJourLine.validate("Shortcut Dimension 1 Code", rec."Branch (G1)");
+                GenJourLine.validate("Shortcut Dimension 2 Code", rec."Business Vertical (G2)");
+                GenJourLine.Comment := 'Auto Post';
+                GenJourLine.Insert(true);
+                Message('Journal Voucher created with Document No. %1', GenJourLine."Document No.");
+            end
     end;
 }

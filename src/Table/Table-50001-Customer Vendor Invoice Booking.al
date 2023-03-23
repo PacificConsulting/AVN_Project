@@ -28,7 +28,7 @@ table 50001 "Customer/Vendor Inv. Booking"
         }
         field(5; "Customer Code"; Code[20])
         {
-            Caption = 'Client Code';
+            Caption = 'Customer Code';
             DataClassification = ToBeClassified;
             TableRelation = Customer."No.";
         }

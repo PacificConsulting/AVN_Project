@@ -102,8 +102,8 @@ page 50000 "COD Payable Receivable List"
             GenJourLine.SetRange("Journal Template Name", 'JOURNALV');
             GenJourLine.SetRange("Journal Batch Name", 'USER-A');
             GenJourLine.Init();
-            GenJourLine."Document No." := NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
-            GenJourLine."Posting Date" := Today;
+            GenJourLine."Document No." := Rec."AVN Voucher No.";//NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
+            GenJourLine."Posting Date" := Rec."Posting Date";
             IF GenJourLine.FindLast() then
                 GenJourLine."Line No." := GenJourLine."Line No." + 10000
             else
@@ -128,7 +128,7 @@ page 50000 "COD Payable Receivable List"
                 GenJourLine.SetRange("Journal Template Name", 'JOURNALV');
                 GenJourLine.SetRange("Journal Batch Name", 'USER-A');
                 GenJourLine.Init();
-                GenJourLine."Document No." := NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
+                GenJourLine."Document No." := Rec."AVN Voucher No.";//NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
                 GenJourLine."Posting Date" := Today;
                 IF GenJourLine.FindLast() then
                     GenJourLine."Line No." := GenJourLine."Line No." + 10000
