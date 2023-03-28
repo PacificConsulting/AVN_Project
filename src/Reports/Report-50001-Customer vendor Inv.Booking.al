@@ -8,8 +8,10 @@ report 50001 "Customer Vendor Inv. Booking"
 
     dataset
     {
-        dataitem("Customer/Vendor Inv. Booking"; "Customer/Vendor Inv. Booking")
+        dataitem("Customer/Vendor Inv. Booking"; "Posted Cust\vend Inv Booking")
         {
+            DataItemTableView = sorting();
+            RequestFilterFields = "Tracking No", "Posting Date";
             column(Tracking_No; "Tracking No")
             {
 
@@ -26,6 +28,18 @@ report 50001 "Customer Vendor Inv. Booking"
             {
 
             }
+            column(customername; customername)
+            {
+
+            }
+            trigger OnAfterGetRecord()
+            var
+                myInt: Integer;
+            begin
+                if customer.GET("Customer Code") then
+                    customername := customer.Name + ' ' + customer."Name 2";
+            end;
+
 
         }
     }
@@ -71,4 +85,6 @@ report 50001 "Customer Vendor Inv. Booking"
 
     var
         myInt: Integer;
+        customer: Record Customer;
+        customername: Text[50];
 }

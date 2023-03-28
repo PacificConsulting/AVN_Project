@@ -1,6 +1,6 @@
-table 50000 "COD Payable/Receivable"
+table 50002 "Posted COD Payeble Receivable"
 {
-    Caption = 'COD Payable/Receivable';
+    Caption = 'Posted COD Payeble Receivable';
     DataClassification = ToBeClassified;
 
     fields

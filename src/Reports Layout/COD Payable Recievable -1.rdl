@@ -681,21 +681,21 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox8">
+                        <Textbox Name="customername">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value />
+                                  <Value>=Fields!customername.Value</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox8</rd:DefaultName>
+                          <rd:DefaultName>customername</rd:DefaultName>
                           <Style>
                             <Border>
                               <Style>Solid</Style>
@@ -726,6 +726,7 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
+                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
@@ -1204,6 +1205,9 @@ End Function
         </Field>
         <Field Name="COD_Amount_Format">
           <DataField>COD_Amount_Format</DataField>
+        </Field>
+        <Field Name="customername">
+          <DataField>customername</DataField>
         </Field>
       </Fields>
       <Query>

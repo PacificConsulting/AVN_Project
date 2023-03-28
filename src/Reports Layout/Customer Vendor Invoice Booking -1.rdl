@@ -11,31 +11,6 @@
       <rd:DataSourceID>6dc0af5e-baa2-4cc5-ac5d-4a7236ec3a54</rd:DataSourceID>
     </DataSource>
   </DataSources>
-  <DataSets>
-    <DataSet Name="DataSet_Result">
-      <Query>
-        <DataSourceName>DataSource</DataSourceName>
-        <CommandText />
-      </Query>
-      <Fields>
-        <Field Name="Tracking_No">
-          <DataField>Tracking_No</DataField>
-        </Field>
-        <Field Name="Shipment_Status">
-          <DataField>Shipment_Status</DataField>
-        </Field>
-        <Field Name="Business_Vertical__G2_">
-          <DataField>Business_Vertical__G2_</DataField>
-        </Field>
-        <Field Name="Amount_Before_GST">
-          <DataField>Amount_Before_GST</DataField>
-        </Field>
-        <Field Name="Amount_Before_GSTFormat">
-          <DataField>Amount_Before_GSTFormat</DataField>
-        </Field>
-      </Fields>
-    </DataSet>
-  </DataSets>
   <ReportSections>
     <ReportSection>
       <Body>
@@ -494,7 +469,6 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
-                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
@@ -850,21 +824,21 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox14">
+                        <Textbox Name="customername">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value />
+                                  <Value>=Fields!customername.Value</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox14</rd:DefaultName>
+                          <rd:DefaultName>customername</rd:DefaultName>
                           <Style>
                             <Border>
                               <Style>Solid</Style>
@@ -895,6 +869,7 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
+                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
@@ -1063,12 +1038,6 @@
       </Page>
     </ReportSection>
   </ReportSections>
-  <ReportParametersLayout>
-    <GridLayoutDefinition>
-      <NumberOfColumns>4</NumberOfColumns>
-      <NumberOfRows>2</NumberOfRows>
-    </GridLayoutDefinition>
-  </ReportParametersLayout>
   <Code>Public Function BlankZero(ByVal Value As Decimal)
     if Value = 0 then
         Return ""
@@ -1108,4 +1077,32 @@ End Function
   <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
   <rd:ReportID>0eeb6585-38ae-40f1-885b-8d50088d51b4</rd:ReportID>
+  <DataSets>
+    <DataSet Name="DataSet_Result">
+      <Fields>
+        <Field Name="Tracking_No">
+          <DataField>Tracking_No</DataField>
+        </Field>
+        <Field Name="Shipment_Status">
+          <DataField>Shipment_Status</DataField>
+        </Field>
+        <Field Name="Business_Vertical__G2_">
+          <DataField>Business_Vertical__G2_</DataField>
+        </Field>
+        <Field Name="Amount_Before_GST">
+          <DataField>Amount_Before_GST</DataField>
+        </Field>
+        <Field Name="Amount_Before_GSTFormat">
+          <DataField>Amount_Before_GSTFormat</DataField>
+        </Field>
+        <Field Name="customername">
+          <DataField>customername</DataField>
+        </Field>
+      </Fields>
+      <Query>
+        <DataSourceName>DataSource</DataSourceName>
+        <CommandText />
+      </Query>
+    </DataSet>
+  </DataSets>
 </Report>

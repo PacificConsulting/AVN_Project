@@ -8,10 +8,10 @@ report 50000 "COD Payable Receivable"
 
     dataset
     {
-        dataitem("COD Payable/Receivable"; "COD Payable/Receivable")
+        dataitem("COD Payable/Receivable"; "Posted COD Payeble Receivable")
         {
             DataItemTableView = sorting("AVN Voucher No.");
-            RequestFilterFields = "Tracking No";
+            RequestFilterFields = "Tracking No", "Posting Date";
             column(Tracking_No; "Tracking No")
             {
 
@@ -36,6 +36,20 @@ report 50000 "COD Payable Receivable"
             {
 
             }
+            column(customername; customername)
+            {
+
+            }
+            trigger OnAfterGetRecord()
+            var
+                myInt: Integer;
+            begin
+                if customer.GET("COD Customer Code") then
+                    customername := customer.Name + ' ' + customer."Name 2";
+            end;
+
+            // end;
+
         }
     }
 
@@ -78,6 +92,9 @@ report 50000 "COD Payable Receivable"
     //     }
     // }
 
+
     var
         myInt: Integer;
+        customer: Record Customer;
+        customername: text[60];
 }
