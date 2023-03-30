@@ -4,7 +4,7 @@ report 50000 "COD Payable Receivable"
     ApplicationArea = All;
     DefaultLayout = RDLC;
     RDLCLayout = 'src\Reports Layout\COD Payable Recievable -1.rdl';
-    //DefaultRenderingLayout = LayoutName;
+
 
     dataset
     {

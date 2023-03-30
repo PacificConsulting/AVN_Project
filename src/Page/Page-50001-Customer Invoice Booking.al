@@ -1,10 +1,11 @@
 page 50001 "Customer/Vendor Inv. Booking"
 {
     ApplicationArea = All;
-    Caption = 'Customer/Vendor Invoice Booking';
+    Caption = 'Customer Invoice Booking';
     PageType = List;
     SourceTable = "Customer/Vendor Inv. Booking";
     UsageCategory = Lists;
+    SourceTableView = where("Customer Code" = filter(<> ''));
 
     layout
     {
@@ -108,22 +109,22 @@ page 50001 "Customer/Vendor Inv. Booking"
     {
         area(Processing)
         {
-            action("Create Journal")
+            action("Create Sales Invoice")
             {
-                Caption = 'Create Journal';
-                Image = Post;
+                Caption = 'Create Sales Invoice';
+                Image = SalesInvoice;
                 Promoted = true;
                 PromotedIsBig = true;
                 PromotedCategory = Process;
                 PromotedOnly = true;
                 trigger OnAction()
                 begin
-                    GenerateJournal();
+                    CreateSalesInvoice();
                 end;
             }
         }
     }
-    local procedure GenerateJournal()
+    local procedure CreateSalesInvoice()
     var
         GenJourLine: record 81;
         NoSeriesMgt: Codeunit 396;

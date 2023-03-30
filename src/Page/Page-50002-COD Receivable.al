@@ -74,9 +74,9 @@ page 50002 "COD Receivable List"
     {
         area(Processing)
         {
-            action("Create Sales Invoice")
+            action("Create Journal Voucher")
             {
-                Caption = 'Create Sales Invoice';
+                Caption = 'Create Journal Voucher';
                 Image = Post;
                 Promoted = true;
                 PromotedIsBig = true;
@@ -84,12 +84,12 @@ page 50002 "COD Receivable List"
                 PromotedOnly = true;
                 trigger OnAction()
                 begin
-                    GenerateSalesInvoice();
+                    GenerateJournalVoucher();
                 end;
             }
         }
     }
-    local procedure GenerateSalesInvoice()
+    local procedure GenerateJournalVoucher()
     var
         GenJourLine: record 81;
         NoSeriesMgt: Codeunit 396;

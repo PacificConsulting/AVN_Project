@@ -4,7 +4,7 @@ report 50001 "Customer Vendor Inv. Booking"
     ApplicationArea = All;
     DefaultLayout = RDLC;
     RDLCLayout = 'src\Reports Layout\Customer Vendor Invoice Booking -1.rdl';
-    // DefaultRenderingLayout = LayoutName;
+
 
     dataset
     {
