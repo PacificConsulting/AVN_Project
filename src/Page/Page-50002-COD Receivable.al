@@ -1,11 +1,11 @@
-page 50000 "COD Payable Receivable List"
+page 50002 "COD Receivable List"
 {
     ApplicationArea = All;
     Caption = 'COD Payable List';
     PageType = List;
     SourceTable = "COD Payable/Receivable";
     UsageCategory = Lists;
-    SourceTableView = where("COD Vendor Code" = filter(<> ''));
+    SourceTableView = where("COD Customer Code" = filter(<> ''));
 
     layout
     {
@@ -25,10 +25,11 @@ page 50000 "COD Payable Receivable List"
                 {
                     ToolTip = 'Specifies the value of the Tracking No field.';
                 }
-                field("COD Vendor Code"; Rec."COD Vendor Code")
+                field("COD Client Payable Code"; Rec."COD Customer Code")
                 {
-                    ToolTip = 'Specifies the value of the COD Vendor Code field.';
+                    ToolTip = 'Specifies the value of the COD Client Payable Code field.';
                 }
+
                 field("Portal Report Number "; Rec."Portal Report Number ")
                 {
                     ToolTip = 'Specifies the value of the Portal Report Number  field.';
@@ -73,9 +74,9 @@ page 50000 "COD Payable Receivable List"
     {
         area(Processing)
         {
-            action("Create Journal Voucher")
+            action("Create Sales Invoice")
             {
-                Caption = 'Create Journal Voucher';
+                Caption = 'Create Sales Invoice';
                 Image = Post;
                 Promoted = true;
                 PromotedIsBig = true;
@@ -83,24 +84,24 @@ page 50000 "COD Payable Receivable List"
                 PromotedOnly = true;
                 trigger OnAction()
                 begin
-                    GenerateJournalVoucher();
+                    GenerateSalesInvoice();
                 end;
             }
         }
     }
-    local procedure GenerateJournalVoucher()
+    local procedure GenerateSalesInvoice()
     var
         GenJourLine: record 81;
         NoSeriesMgt: Codeunit 396;
         BankAcc: Record 270;
     begin
-        if Rec."COD Vendor Code" <> '' then begin
+        IF Rec."COD Customer Code" <> '' then begin
             GenJourLine.Reset();
             GenJourLine.SetRange("Journal Template Name", 'JOURNALV');
             GenJourLine.SetRange("Journal Batch Name", 'USER-A');
             GenJourLine.Init();
             GenJourLine."Document No." := Rec."AVN Voucher No.";//NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
-            GenJourLine."Posting Date" := Today;
+            GenJourLine."Posting Date" := Rec."Posting Date";
             IF GenJourLine.FindLast() then
                 GenJourLine."Line No." := GenJourLine."Line No." + 10000
             else
@@ -108,8 +109,8 @@ page 50000 "COD Payable Receivable List"
 
             GenJourLine."Journal Template Name" := 'JOURNALV';
             GenJourLine."Journal Batch Name" := 'USER-A';
-            GenJourLine."Account Type" := GenJourLine."Account Type"::Vendor;
-            GenJourLine.validate("Account No.", rec."COD Vendor Code");
+            GenJourLine."Account Type" := GenJourLine."Account Type"::Customer;
+            GenJourLine.validate("Account No.", rec."COD Customer Code");
             GenJourLine."Bal. Account Type" := GenJourLine."Bal. Account Type"::"G/L Account";
             GenJourLine.Validate("Bal. Account No.", Rec."Ledger Code");
             //GenJourLine."GST Group Code" := 'Goods';
@@ -120,7 +121,6 @@ page 50000 "COD Payable Receivable List"
             GenJourLine.Insert(true);
             Message('Journal Voucher created with Document No. %1', GenJourLine."Document No.");
         end;
-
         // IF Not CODEUNIT.RUN(CODEUNIT::"Gen. Jnl.-Post", GenJourLine) then begin
 
         //end;

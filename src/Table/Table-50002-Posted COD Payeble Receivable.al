@@ -3,6 +3,7 @@ table 50002 "Posted COD Payeble Receivable"
     Caption = 'Posted COD Payeble Receivable';
     DataClassification = ToBeClassified;
 
+
     fields
     {
         field(1; "AVN Voucher No."; Code[20])
