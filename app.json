@@ -1,6 +1,6 @@
 {
   "id": "a461f2ee-aff9-48b9-ae15-e1c8d7e06a8c",
-  "name": "AVN_Project",
+  "name": "AVN Customer/Vendor Booking",
   "publisher": "Pacific",
   "version": "1.0.0.0",
   "brief": "",
@@ -82,10 +82,12 @@
   ],
   "resourceExposurePolicy": {
     "allowDebugging": true,
-    "allowDownloadingSource": true,
-    "includeSourceInSymbolFile": true
+    "allowDownloadingSource": false,
+    "includeSourceInSymbolFile": false
   },
+  "showMyCode": true,
   "runtime": "10.0",
+  
   
   "features": [
     "NoImplicitWith"
