@@ -33,10 +33,7 @@ page 50003 "Vendor Inv. Booking"
                 {
                     ToolTip = 'Specifies the value of the Vendor Code field.';
                 }
-                field("Client Code"; Rec."Customer Code")
-                {
-                    ToolTip = 'Specifies the value of the Client Code field.';
-                }
+
                 field("Branch for GST (Location)"; Rec."Branch for GST (Location)")
                 {
                     ToolTip = 'Specifies the value of the Branch for GST (Location) field.';

@@ -127,10 +127,17 @@ table 50001 "Customer/Vendor Inv. Booking"
             Caption = 'Select';
             DataClassification = ToBeClassified;
         }
+        field(23; Created; Boolean)
+        {
+            Caption = 'Line Created';
+            DataClassification = ToBeClassified;
+            Editable = false;
+        }
+
     }
     keys
     {
-        key(PK; "AVN Document No.")
+        key(PK; "AVN Document No.", "Customer Code", "Vendor Code", "Tracking No")
         {
             Clustered = true;
         }

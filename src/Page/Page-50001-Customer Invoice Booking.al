@@ -6,6 +6,7 @@ page 50001 "Customer/Vendor Inv. Booking"
     SourceTable = "Customer/Vendor Inv. Booking";
     UsageCategory = Lists;
     SourceTableView = where("Customer Code" = filter(<> ''));
+    RefreshOnActivate = true;
 
     layout
     {
@@ -29,10 +30,7 @@ page 50001 "Customer/Vendor Inv. Booking"
                 {
                     ToolTip = 'Specifies the value of the Tracking No for RTO If Different field.';
                 }
-                field("Vendor Code"; Rec."Vendor Code")
-                {
-                    ToolTip = 'Specifies the value of the Vendor Code field.';
-                }
+
                 field("Client Code"; Rec."Customer Code")
                 {
                     ToolTip = 'Specifies the value of the Client Code field.';
@@ -45,14 +43,7 @@ page 50001 "Customer/Vendor Inv. Booking"
                 {
                     ToolTip = 'Specifies the value of the Order From Address field.';
                 }
-                field("Vendor Invoice No."; Rec."Vendor Invoice No.")
-                {
-                    ToolTip = 'Specifies the value of the Vendor Invoice No. field.';
-                }
-                field("Vendor Invoice Date"; Rec."Vendor Invoice Date")
-                {
-                    ToolTip = 'Specifies the value of the Vendor Invoice Date field.';
-                }
+
                 field("Due Date"; Rec."Due Date")
                 {
                     ToolTip = 'Specifies the value of the Due Date field.';
@@ -102,6 +93,10 @@ page 50001 "Customer/Vendor Inv. Booking"
                 {
                     ToolTip = 'Specifies the value of the Select field.';
                 }
+                field(Created; Rec.Created)
+                {
+
+                }
             }
         }
     }
@@ -118,81 +113,97 @@ page 50001 "Customer/Vendor Inv. Booking"
                 PromotedCategory = Process;
                 PromotedOnly = true;
                 trigger OnAction()
+                var
+                    CustInv: Record "Customer/Vendor Inv. Booking";
+                    CustInvNew: Record "Customer/Vendor Inv. Booking";
                 begin
-                    CreateSalesInvoice();
+                    CustInv.Reset();
+                    CustInv.SetRange(Select, true);
+                    CustInv.SetFilter("Customer Code", '<>%1', '');
+                    IF CustInv.FindSet() then
+                        repeat
+                            CustInvNew.Reset();
+                            CustInvNew.SetRange(Select, true);
+                            CustInvNew.SetRange("AVN Document No.", CustInv."AVN Document No.");
+                            CustInvNew.SetRange("Ledger Code", CustInv."Ledger Code");
+                            CustInvNew.SetRange("GST Group", CustInv."GST Group");
+                            CustInvNew.SetRange(Created, false);
+                            IF CustInvNew.FindSet() then
+                                repeat
+                                    CreateSalesInvoice(CustInvNew);
+                                until CustInvNew.Next() = 0;
+                            Message('Sales Invoice Created with Document No. %1', CustInvNew."AVN Document No.");
+                        until CustInv.Next() = 0;
                 end;
             }
         }
     }
-    local procedure CreateSalesInvoice()
+    local procedure CreateSalesInvoice(CustInvBookFilter: Record "Customer/Vendor Inv. Booking") //custDocumentNo: Code[20]; GLcode: Code[20]; SACcode: Code[20]
     var
-        GenJourLine: record 81;
+        SalesHeader: record "Sales Header";
+        SalesHFilter: Record "Sales Header";
+        SalesLineFilter: Record "Sales Line";
+        SalesLineInit: Record "Sales Line";
+        SalesL: Record "Sales Line";
         NoSeriesMgt: Codeunit 396;
-        BankAcc: Record 270;
+        CustInvBookSL: Record "Customer/Vendor Inv. Booking";
+        AmtBeforeGST: Decimal;
     begin
-        IF Rec."Customer Code" <> '' then begin
-            GenJourLine.Reset();
-            GenJourLine.SetRange("Journal Template Name", 'SALES');
-            GenJourLine.SetRange("Journal Batch Name", 'DEFAULT');
-            GenJourLine.Init();
-            GenJourLine."Document No." := Rec."AVN Document No.";//NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
-            GenJourLine."Posting Date" := Rec."Posting Date";
-            IF GenJourLine.FindLast() then
-                GenJourLine."Line No." := GenJourLine."Line No." + 10000
+        SalesHFilter.Reset();
+        SalesHFilter.SetRange("No.", CustInvBookFilter."AVN Document No.");
+        IF Not SalesHFilter.FindFirst() then begin
+            SalesHeader.Init();
+            SalesHeader."Document Type" := SalesHeader."Document Type"::Invoice;
+            SalesHeader.Validate("No.", CustInvBookFilter."AVN Document No.");
+            SalesHeader.Insert(true);
+            SalesHeader.Validate("Sell-to Customer No.", CustInvBookFilter."Customer Code");
+            SalesHeader.Validate("Posting Date", CustInvBookFilter."Posting Date");
+            SalesHeader.Validate("Location Code", CustInvBookFilter."Branch for GST (Location)");
+            SalesHeader.validate("Ship-to Code", CustInvBookFilter."Shipped to address");
+            SalesHeader.Validate("Shortcut Dimension 1 Code", CustInvBookFilter."Branch (G1)");
+            SalesHeader.Validate("Shortcut Dimension 2 Code", CustInvBookFilter."Business Vertical (G2)");
+            SalesHeader.Validate("Salesperson Code", CustInvBookFilter."Sales Person");
+            SalesHeader.Validate("Posting No.", CustInvBookFilter."AVN Document No.");
+            SalesHeader.Modify();
+        end;
+
+        SalesLineFilter.Reset();
+        SalesLineFilter.SetRange(Type, SalesLineFilter.Type::"G/L Account");
+        SalesLineFilter.SetRange("Document No.", CustInvBookFilter."AVN Document No.");
+        SalesLineFilter.SetRange("No.", CustInvBookFilter."Ledger Code");
+        SalesLineFilter.SetRange("HSN/SAC Code", CustInvBookFilter.SAC);
+        IF not SalesLineFilter.FindFirst() then begin
+            SaleslineInit.Init();
+            SaleslineInit."Document Type" := SaleslineInit."Document Type"::Invoice;
+            SaleslineInit."Document No." := CustInvBookFilter."AVN Document No.";
+
+            SalesL.Reset();
+            SalesL.SetRange("Document No.", CustInvBookFilter."AVN Document No.");
+            IF not SalesL.FindFirst() then
+                SaleslineInit."Line No." := 10000
             else
-                GenJourLine."Line No." := 10000;
+                SalesLineInit."Line No." := SalesL."Line No." + 10000;
 
-            GenJourLine."Journal Template Name" := 'SALES';
-            GenJourLine."Journal Batch Name" := 'DEFAULT';
-            GenJourLine."Document Type" := GenJourLine."Document Type"::Invoice;
-            GenJourLine."Account Type" := GenJourLine."Account Type"::Customer;
-            GenJourLine.validate("Account No.", rec."Customer Code");
-            GenJourLine."Bal. Account Type" := GenJourLine."Bal. Account Type"::"G/L Account";
-            GenJourLine.Validate("Bal. Account No.", rec."Ledger Code");
-            GenJourLine."Sales Invoice Type" := GenJourLine."Sales Invoice Type"::Taxable;
-            GenJourLine.Validate("GST Group Code", rec."GST Group");
-            GenJourLine.Validate("HSN/SAC Code", rec.SAC);
-            //GenJourLine."GST Group Code" := 'Goods';
-            GenJourLine.validate(Amount, Rec."Amount Before GST");
-            GenJourLine.validate("Location Code", rec."Branch for GST (Location)");
-            GenJourLine.validate("Shortcut Dimension 1 Code", rec."Branch (G1)");
-            GenJourLine.validate("Shortcut Dimension 2 Code", rec."Business Vertical (G2)");
-            GenJourLine.Comment := 'Auto Post';
-            GenJourLine.Insert(true);
-            Message('Journal Voucher created with Document No. %1', GenJourLine."Document No.");
-        end else
-            IF Rec."Vendor Code" <> '' then begin
-                GenJourLine.Reset();
-                GenJourLine.SetRange("Journal Template Name", 'PURCHJNL');
-                GenJourLine.SetRange("Journal Batch Name", 'DEFAULT');
-                GenJourLine.Init();
-                GenJourLine."Document No." := Rec."AVN Document No.";//NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
-                GenJourLine."Posting Date" := Rec."Posting Date";
-                IF GenJourLine.FindLast() then
-                    GenJourLine."Line No." := GenJourLine."Line No." + 10000
-                else
-                    GenJourLine."Line No." := 10000;
+            SaleslineInit.Insert(true);
+            SaleslineInit.Type := SaleslineInit.Type::"G/L Account";
+            SaleslineInit.Validate("No.", CustInvBookFilter."Ledger Code");
+            SalesLineInit.Validate(Quantity, 1);
 
-                GenJourLine."Journal Template Name" := 'PURCHJNL';
-                GenJourLine."Journal Batch Name" := 'DEFAULT';
-                GenJourLine."Document Type" := GenJourLine."Document Type"::Invoice;
-                GenJourLine."Account Type" := GenJourLine."Account Type"::Vendor;
-                GenJourLine.validate("Account No.", rec."Vendor Code");
-                GenJourLine."Bal. Account Type" := GenJourLine."Bal. Account Type"::"G/L Account";
-                GenJourLine.Validate("Bal. Account No.", rec."Ledger Code");
-                GenJourLine."Sales Invoice Type" := GenJourLine."Sales Invoice Type"::Taxable;
-                GenJourLine.Validate("GST Group Code", rec."GST Group");
-                GenJourLine.Validate("HSN/SAC Code", rec.SAC);
-                GenJourLine.Validate("GST Vendor Type", GenJourLine."GST Vendor Type"::Registered);
-                GenJourLine.Validate("GST Credit", GenJourLine."GST Credit"::Availment);
-                //GenJourLine."GST Group Code" := 'Goods';
-                GenJourLine.validate(Amount, Rec."Amount Before GST");
-                GenJourLine.validate("Location Code", rec."Branch for GST (Location)");
-                GenJourLine.validate("Shortcut Dimension 1 Code", rec."Branch (G1)");
-                GenJourLine.validate("Shortcut Dimension 2 Code", rec."Business Vertical (G2)");
-                GenJourLine.Comment := 'Auto Post';
-                GenJourLine.Insert(true);
-                Message('Journal Voucher created with Document No. %1', GenJourLine."Document No.");
-            end
+            SaleslineInit.Validate("Unit Price Incl. of Tax", CustInvBookFilter."Amount Before GST");
+            SaleslineInit.Validate("GST Group Code", CustInvBookFilter."GST Group");
+            SaleslineInit.Validate("HSN/SAC Code", CustInvBookFilter.SAC);
+            SaleslineInit.Modify();
+            CustInvBookFilter.Created := true;
+            CustInvBookFilter.Modify();
+        end else begin
+            AmtBeforeGST += SalesLineFilter."Unit Price Incl. of Tax" + CustInvBookFilter."Amount Before GST";
+            SalesLineFilter.Validate("Unit Price Incl. of Tax", AmtBeforeGST);
+            SalesLineFilter.Modify();
+            CustInvBookFilter.Created := true;
+            CustInvBookFilter.Modify();
+        end;
     end;
+
+    //end;
+    //end;
 }
