@@ -85,7 +85,6 @@
     "allowDownloadingSource": false,
     "includeSourceInSymbolFile": false
   },
-  "showMyCode": true,
   "runtime": "10.0",
   
   
