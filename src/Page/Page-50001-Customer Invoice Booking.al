@@ -93,7 +93,7 @@ page 50001 "Customer/Vendor Inv. Booking"
                 {
                     ToolTip = 'Specifies the value of the Select field.';
                 }
-                field(Created; Rec.Created)
+                field("Order Created"; Rec."Order Created")
                 {
 
                 }
@@ -127,12 +127,12 @@ page 50001 "Customer/Vendor Inv. Booking"
                             CustInvNew.SetRange("AVN Document No.", CustInv."AVN Document No.");
                             CustInvNew.SetRange("Ledger Code", CustInv."Ledger Code");
                             CustInvNew.SetRange("GST Group", CustInv."GST Group");
-                            CustInvNew.SetRange(Created, false);
+                            CustInvNew.SetRange("Order Created", false);
                             IF CustInvNew.FindSet() then
                                 repeat
                                     CreateSalesInvoice(CustInvNew);
                                 until CustInvNew.Next() = 0;
-                            Message('Sales Invoice Created with Document No. %1', CustInvNew."AVN Document No.");
+                            Message('Sales Invoice "Order Created" with Document No. %1', CustInvNew."AVN Document No.");
                         until CustInv.Next() = 0;
                 end;
             }
@@ -189,17 +189,18 @@ page 50001 "Customer/Vendor Inv. Booking"
             SaleslineInit.Validate("No.", CustInvBookFilter."Ledger Code");
             SalesLineInit.Validate(Quantity, 1);
 
-            SaleslineInit.Validate("Unit Price Incl. of Tax", CustInvBookFilter."Amount Before GST");
+            SaleslineInit.Validate("Unit Price", CustInvBookFilter."Amount Before GST");
             SaleslineInit.Validate("GST Group Code", CustInvBookFilter."GST Group");
             SaleslineInit.Validate("HSN/SAC Code", CustInvBookFilter.SAC);
+            SalesLineInit.SetRange("GST Credit", SalesLineInit."GST Credit"::Availment);
             SaleslineInit.Modify();
-            CustInvBookFilter.Created := true;
+            CustInvBookFilter."Order Created" := true;
             CustInvBookFilter.Modify();
         end else begin
-            AmtBeforeGST += SalesLineFilter."Unit Price Incl. of Tax" + CustInvBookFilter."Amount Before GST";
-            SalesLineFilter.Validate("Unit Price Incl. of Tax", AmtBeforeGST);
+            AmtBeforeGST += SalesLineFilter."Unit Price" + CustInvBookFilter."Amount Before GST";
+            SalesLineFilter.Validate("Unit Price", AmtBeforeGST);
             SalesLineFilter.Modify();
-            CustInvBookFilter.Created := true;
+            CustInvBookFilter."Order Created" := true;
             CustInvBookFilter.Modify();
         end;
     end;

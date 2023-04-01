@@ -99,6 +99,10 @@ page 50003 "Vendor Inv. Booking"
                 {
                     ToolTip = 'Specifies the value of the Select field.';
                 }
+                field(Created; Rec."Order Created")
+                {
+
+                }
             }
         }
     }
@@ -106,9 +110,9 @@ page 50003 "Vendor Inv. Booking"
     {
         area(Processing)
         {
-            action("Create Sales Invoice")
+            action("Create Purchase Invoice")
             {
-                Caption = 'Create Sales Invoice';
+                Caption = 'Create Purchase Invoice';
                 Image = SalesInvoice;
                 Promoted = true;
                 PromotedIsBig = true;
@@ -121,20 +125,21 @@ page 50003 "Vendor Inv. Booking"
                 begin
                     VendInv.Reset();
                     VendInv.SetRange(Select, true);
-                    VendInv.SetFilter("Customer Code", '<>%1', '');
+                    VendInv.SetFilter("Vendor Code", '<>%1', '');
                     IF VendInv.FindSet() then
                         repeat
                             VendInvNew.Reset();
                             VendInvNew.SetRange(Select, true);
+                            //VendInvNew.SetRange("Vendor Code", '<>%1', '');
                             VendInvNew.SetRange("AVN Document No.", VendInv."AVN Document No.");
                             VendInvNew.SetRange("Ledger Code", VendInv."Ledger Code");
                             VendInvNew.SetRange("GST Group", VendInv."GST Group");
-                            VendInvNew.SetRange(Created, false);
+                            VendInvNew.SetRange("Order Created", false);
                             IF VendInvNew.FindSet() then
                                 repeat
                                     CreatePurchaseInvoice(VendInvNew);
                                 until VendInvNew.Next() = 0;
-                            Message('Sales Invoice Created with Document No. %1', VendInvNew."AVN Document No.");
+                            Message('Purchase Invoice Created with Document No. %1', VendInvNew."AVN Document No.");
                         until VendInv.Next() = 0;
                 end;
             }
@@ -158,13 +163,15 @@ page 50003 "Vendor Inv. Booking"
             PurchHeader."Document Type" := PurchHeader."Document Type"::Invoice;
             PurchHeader.Validate("No.", VendInvBookFilter."AVN Document No.");
             PurchHeader.Insert(true);
-            PurchHeader.Validate("Sell-to Customer No.", VendInvBookFilter."Customer Code");
+            PurchHeader.Validate("Buy-from Vendor No.", VendInvBookFilter."Vendor Code");
             PurchHeader.Validate("Posting Date", VendInvBookFilter."Posting Date");
             PurchHeader.Validate("Location Code", VendInvBookFilter."Branch for GST (Location)");
-            PurchHeader.validate("Ship-to Code", VendInvBookFilter."Shipped to address");
+            //PurchHeader.validate("Ship-to Code", VendInvBookFilter."Shipped to address");
             PurchHeader.Validate("Shortcut Dimension 1 Code", VendInvBookFilter."Branch (G1)");
             PurchHeader.Validate("Shortcut Dimension 2 Code", VendInvBookFilter."Business Vertical (G2)");
             //PurchHeader.Validate("Salesperson Code", VendInvBookFilter."Sales Person");
+            PurchHeader.Validate("Vendor Invoice No.", VendInvBookFilter."Vendor Invoice No.");
+
             PurchHeader.Validate("Posting No.", VendInvBookFilter."AVN Document No.");
             //PurchHeader.Validate(in);
             PurchHeader.Modify();
@@ -192,17 +199,18 @@ page 50003 "Vendor Inv. Booking"
             PurchLineInit.Validate("No.", VendInvBookFilter."Ledger Code");
             PurchLineInit.Validate(Quantity, 1);
 
-            PurchLineInit.Validate("Line Amount", VendInvBookFilter."Amount Before GST");
+            PurchLineInit.Validate("Direct Unit Cost", VendInvBookFilter."Amount Before GST");
             PurchLineInit.Validate("GST Group Code", VendInvBookFilter."GST Group");
             PurchLineInit.Validate("HSN/SAC Code", VendInvBookFilter.SAC);
+            PurchLineInit.Validate("GST Credit", PurchLineInit."GST Credit"::Availment);
             PurchLineInit.Modify();
-            VendInvBookFilter.Created := true;
+            VendInvBookFilter."Order Created" := true;
             VendInvBookFilter.Modify();
         end else begin
-            AmtBeforeGST += PurchLineFilter."Line Amount" + VendInvBookFilter."Amount Before GST";
-            PurchLineFilter.Validate("Line Amount", AmtBeforeGST);
+            AmtBeforeGST += PurchLineFilter."Direct Unit Cost" + VendInvBookFilter."Amount Before GST";
+            PurchLineFilter.Validate("Direct Unit Cost", AmtBeforeGST);
             PurchLineFilter.Modify();
-            VendInvBookFilter.Created := true;
+            VendInvBookFilter."Order Created" := true;
             VendInvBookFilter.Modify();
         end;
     end;

@@ -127,11 +127,11 @@ table 50001 "Customer/Vendor Inv. Booking"
             Caption = 'Select';
             DataClassification = ToBeClassified;
         }
-        field(23; Created; Boolean)
+        field(23; "Order Created"; Boolean)
         {
-            Caption = 'Line Created';
+            Caption = 'Order Created';
             DataClassification = ToBeClassified;
-            Editable = false;
+            //Editable = false;
         }
 
     }
