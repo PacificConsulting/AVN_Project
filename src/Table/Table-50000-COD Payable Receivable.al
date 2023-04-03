@@ -87,11 +87,16 @@ table 50000 "COD Payable/Receivable"
             DataClassification = ToBeClassified;
 
         }
+        field(16; "Lines Created"; Boolean)
+        {
+            DataClassification = ToBeClassified;
+            Caption = 'Lines Created';
+        }
 
     }
     keys
     {
-        key(PK; "AVN Voucher No.")
+        key(PK; "AVN Voucher No.", "COD Customer Code", "COD Vendor Code", "Tracking No")
         {
             Clustered = true;
         }

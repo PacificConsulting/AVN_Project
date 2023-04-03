@@ -129,6 +129,17 @@ table 50003 "Posted Cust\vend Inv Booking"
             Caption = 'Select';
             DataClassification = ToBeClassified;
         }
+        field(23; "Order Created"; Boolean)
+        {
+            Caption = 'Order Created';
+            DataClassification = ToBeClassified;
+            //Editable = false;
+        }
+        field(24; "Entry Posted"; Boolean)
+        {
+            Caption = 'Entry Posted';
+            DataClassification = ToBeClassified;
+        }
     }
     keys
     {

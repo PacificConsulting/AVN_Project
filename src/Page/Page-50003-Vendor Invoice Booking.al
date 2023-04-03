@@ -122,6 +122,7 @@ page 50003 "Vendor Inv. Booking"
                 var
                     VendInv: Record "Customer/Vendor Inv. Booking";
                     VendInvNew: Record "Customer/Vendor Inv. Booking";
+                    DocNo: Code[20];
                 begin
                     VendInv.Reset();
                     VendInv.SetRange(Select, true);
@@ -139,7 +140,9 @@ page 50003 "Vendor Inv. Booking"
                                 repeat
                                     CreatePurchaseInvoice(VendInvNew);
                                 until VendInvNew.Next() = 0;
-                            Message('Purchase Invoice Created with Document No. %1', VendInvNew."AVN Document No.");
+                            IF DocNo <> VendInvNew."AVN Document No." then
+                                Message('Purchase Invoice Created with Document No. %1', VendInvNew."AVN Document No.");
+                            DocNo := VendInvNew."AVN Document No.";
                         until VendInv.Next() = 0;
                 end;
             }

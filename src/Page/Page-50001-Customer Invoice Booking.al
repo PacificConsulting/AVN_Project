@@ -112,14 +112,17 @@ page 50001 "Customer/Vendor Inv. Booking"
                 PromotedIsBig = true;
                 PromotedCategory = Process;
                 PromotedOnly = true;
+
                 trigger OnAction()
                 var
                     CustInv: Record "Customer/Vendor Inv. Booking";
                     CustInvNew: Record "Customer/Vendor Inv. Booking";
+                    DocNo: code[20];
                 begin
                     CustInv.Reset();
                     CustInv.SetRange(Select, true);
                     CustInv.SetFilter("Customer Code", '<>%1', '');
+
                     IF CustInv.FindSet() then
                         repeat
                             CustInvNew.Reset();
@@ -132,8 +135,11 @@ page 50001 "Customer/Vendor Inv. Booking"
                                 repeat
                                     CreateSalesInvoice(CustInvNew);
                                 until CustInvNew.Next() = 0;
-                            Message('Sales Invoice "Order Created" with Document No. %1', CustInvNew."AVN Document No.");
+                            IF DocNo <> CustInvNew."AVN Document No." then
+                                Message('Sales Invoice "Order Created" with Document No. %1', CustInvNew."AVN Document No.");
+                            DocNo := CustInvNew."AVN Document No.";
                         until CustInv.Next() = 0;
+
                 end;
             }
         }

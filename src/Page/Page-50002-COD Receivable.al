@@ -1,7 +1,7 @@
 page 50002 "COD Receivable List"
 {
     ApplicationArea = All;
-    Caption = 'COD Payable List';
+    Caption = 'COD Receivable List';
     PageType = List;
     SourceTable = "COD Payable/Receivable";
     UsageCategory = Lists;
@@ -67,6 +67,10 @@ page 50002 "COD Receivable List"
                 {
                     ToolTip = 'Specifies the value of the Select field.';
                 }
+                field("Lines Created"; Rec."Lines Created")
+                {
+                    ToolTip = 'It is Indicate Lines already Created for journal Voucher';
+                }
             }
         }
     }
@@ -94,11 +98,12 @@ page 50002 "COD Receivable List"
         GenJourLine: record 81;
         NoSeriesMgt: Codeunit 396;
         BankAcc: Record 270;
+        CODRec: Record "COD Payable/Receivable";
     begin
         IF Rec."COD Customer Code" <> '' then begin
             GenJourLine.Reset();
-            GenJourLine.SetRange("Journal Template Name", 'JOURNALV');
-            GenJourLine.SetRange("Journal Batch Name", 'USER-A');
+            GenJourLine.SetRange("Journal Template Name", 'JOURNAL V');
+            GenJourLine.SetRange("Journal Batch Name", 'DEFAUT');
             GenJourLine.Init();
             GenJourLine."Document No." := Rec."AVN Voucher No.";//NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
             GenJourLine."Posting Date" := Rec."Posting Date";
@@ -107,8 +112,8 @@ page 50002 "COD Receivable List"
             else
                 GenJourLine."Line No." := 10000;
 
-            GenJourLine."Journal Template Name" := 'JOURNALV';
-            GenJourLine."Journal Batch Name" := 'USER-A';
+            GenJourLine."Journal Template Name" := 'JOURNAL V';
+            GenJourLine."Journal Batch Name" := 'DEFAUT';
             GenJourLine."Account Type" := GenJourLine."Account Type"::Customer;
             GenJourLine.validate("Account No.", rec."COD Customer Code");
             GenJourLine."Bal. Account Type" := GenJourLine."Bal. Account Type"::"G/L Account";
@@ -119,6 +124,13 @@ page 50002 "COD Receivable List"
             GenJourLine.validate("Shortcut Dimension 2 Code", rec."Business Vertical (G2)");
             GenJourLine.Comment := 'Auto Post';
             GenJourLine.Insert(true);
+            CODRec.Reset();
+            CODRec.SetRange("AVN Voucher No.", GenJourLine."Document No.");
+            CODRec.SetRange("COD Customer Code", GenJourLine."Account No.");
+            IF CODRec.FindFirst() then begin
+                CODRec."Lines Created" := true;
+                CODRec.Modify();
+            end;
             Message('Journal Voucher created with Document No. %1', GenJourLine."Document No.");
         end;
         // IF Not CODEUNIT.RUN(CODEUNIT::"Gen. Jnl.-Post", GenJourLine) then begin

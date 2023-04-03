@@ -133,6 +133,11 @@ table 50001 "Customer/Vendor Inv. Booking"
             DataClassification = ToBeClassified;
             //Editable = false;
         }
+        field(24; "Entry Posted"; Boolean)
+        {
+            Caption = 'Entry Posted';
+            DataClassification = ToBeClassified;
+        }
 
     }
     keys
