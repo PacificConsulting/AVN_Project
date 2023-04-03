@@ -19,7 +19,7 @@ pageextension 50000 "Role Center for Page" extends "Order Processor Role Center"
                         Caption = 'COD Payable';
                         Image = EditList;
                         RunObject = xmlport 50000;
-                        ToolTip = 'Import the data of COD Payable';
+                        ToolTip = 'Import the xml data of COD Payable';
                     }
                     action("COD Receivable")
                     {
@@ -27,7 +27,7 @@ pageextension 50000 "Role Center for Page" extends "Order Processor Role Center"
                         Caption = 'COD Receivable';
                         Image = EditList;
                         RunObject = xmlport 50001;
-                        ToolTip = 'Import the data of COD Receivable';
+                        ToolTip = 'Import the xml data of COD Receivable';
                     }
                     action("Vendor Invoice Booking")
                     {
@@ -35,7 +35,7 @@ pageextension 50000 "Role Center for Page" extends "Order Processor Role Center"
                         Caption = 'Vendor Invoice Booking';
                         Image = EditList;
                         RunObject = xmlport 50002;
-                        ToolTip = 'Import the data of Vendor Invoice Booking';
+                        ToolTip = 'Import the xml data of Vendor Invoice Booking';
                     }
                     action("Client Invoice Booking")
                     {
@@ -43,7 +43,7 @@ pageextension 50000 "Role Center for Page" extends "Order Processor Role Center"
                         Caption = 'Client Invoice Booking';
                         Image = EditList;
                         RunObject = xmlport 50003;
-                        ToolTip = 'Import the data of Client Invoice Booking';
+                        ToolTip = 'Import the xml data of Client Invoice Booking';
                     }
                 }
                 group("COD Customer/vendor")
