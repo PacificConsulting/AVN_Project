@@ -96,14 +96,7 @@ page 50000 "COD Payable List"
                     CODPay.SetRange("Lines Created", false);
                     IF CODPay.FindSet() then
                         repeat
-                            CODPayNew.Reset();
-                            CODPayNew.SetRange(Select, true);
-                            CODPayNew.SetRange("AVN Voucher No.", CODPayNew."AVN Voucher No.");
-                            CODPayNew.SetRange("Ledger Code", CODPay."Ledger Code");
-                            IF CODPayNew.FindSet() then
-                                repeat
-                                    GenerateJournalVoucher(CODPayNew);
-                                until CODPayNew.Next() = 0;
+                            GenerateJournalVoucher(CODPay);
                         until CODPay.Next() = 0;
                 end;
             }
@@ -117,15 +110,16 @@ page 50000 "COD Payable List"
         BankAcc: Record 270;
         CODPay: Record "COD Payable/Receivable";
     begin
-        GenJourLineFilter.Reset();
-        GenJourLineFilter.SetRange("Document No.", CODPayFilter."AVN Voucher No.");
-        IF not GenJourLineFilter.FindFirst() then begin
+        // GenJourLineFilter.Reset();
+        //GenJourLineFilter.SetRange("Document No.", CODPayFilter."AVN Voucher No.");
+        //IF not GenJourLineFilter.FindFirst() then begin
+        IF CODPayFilter."COD Vendor Code" <> '' then begin
             GenJourLine.Reset();
             GenJourLine.SetRange("Journal Template Name", 'JOURNAL V');
             GenJourLine.SetRange("Journal Batch Name", 'DEFAULT');
             GenJourLine.Init();
-            GenJourLine."Document No." := Rec."AVN Voucher No.";//NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
-            GenJourLine."Posting Date" := Today;
+            GenJourLine."Document No." := CODPayFilter."AVN Voucher No.";//NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
+            GenJourLine."Posting Date" := CODPayFilter."Posting Date";
             IF GenJourLine.FindLast() then
                 GenJourLine."Line No." := GenJourLine."Line No." + 10000
             else
@@ -134,12 +128,12 @@ page 50000 "COD Payable List"
             GenJourLine."Journal Template Name" := 'JOURNAL V';
             GenJourLine."Journal Batch Name" := 'DEFAULT';
             GenJourLine."Account Type" := GenJourLine."Account Type"::Vendor;
-            GenJourLine.validate("Account No.", rec."COD Vendor Code");
+            GenJourLine.validate("Account No.", CODPayFilter."COD Vendor Code");
             GenJourLine."Bal. Account Type" := GenJourLine."Bal. Account Type"::"G/L Account";
-            GenJourLine.Validate("Bal. Account No.", Rec."Ledger Code");
-            GenJourLine.validate(Amount, Rec."COD Amount ");
-            GenJourLine.validate("Shortcut Dimension 1 Code", rec."Branch (G1)");
-            GenJourLine.validate("Shortcut Dimension 2 Code", rec."Business Vertical (G2)");
+            GenJourLine.Validate("Bal. Account No.", CODPayFilter."Ledger Code");
+            GenJourLine.validate(Amount, CODPayFilter."COD Amount ");
+            GenJourLine.validate("Shortcut Dimension 1 Code", CODPayFilter."Branch (G1)");
+            GenJourLine.validate("Shortcut Dimension 2 Code", CODPayFilter."Business Vertical (G2)");
             GenJourLine.Comment := 'Auto Post';
             GenJourLine.Insert(true);
 
@@ -150,15 +144,11 @@ page 50000 "COD Payable List"
                 CODPay."Lines Created" := true;
                 CODPay.Modify();
             end;
-            Message('Journal Voucher created with Document No. %1', GenJourLine."Document No.");
-        end else begin
-
         end;
-
+        Message('Journal Voucher created with Document No. %1', GenJourLine."Document No.");
 
         // IF Not CODEUNIT.RUN(CODEUNIT::"Gen. Jnl.-Post", GenJourLine) then begin
 
-        //end;
 
     end;
 }

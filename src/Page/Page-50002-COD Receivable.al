@@ -87,26 +87,36 @@ page 50002 "COD Receivable List"
                 PromotedCategory = Process;
                 PromotedOnly = true;
                 trigger OnAction()
+                var
+                    CODRec: Record "COD Payable/Receivable";
                 begin
-                    GenerateJournalVoucher();
+
+                    CODRec.Reset();
+                    CODRec.SetRange(Select, true);
+                    CODRec.SetFilter("COD Customer Code", '<>%1', '');
+                    CODRec.SetRange("Lines Created", false);
+                    IF CODRec.FindSet() then
+                        repeat
+                            GenerateJournalVoucher(CODRec);
+                        until CODRec.Next() = 0;
                 end;
             }
         }
     }
-    local procedure GenerateJournalVoucher()
+    local procedure GenerateJournalVoucher(CODRecFilter: Record "COD Payable/Receivable")
     var
         GenJourLine: record 81;
         NoSeriesMgt: Codeunit 396;
         BankAcc: Record 270;
         CODRec: Record "COD Payable/Receivable";
     begin
-        IF Rec."COD Customer Code" <> '' then begin
+        IF CODRecFilter."COD Customer Code" <> '' then begin
             GenJourLine.Reset();
             GenJourLine.SetRange("Journal Template Name", 'JOURNAL V');
             GenJourLine.SetRange("Journal Batch Name", 'DEFAUT');
             GenJourLine.Init();
-            GenJourLine."Document No." := Rec."AVN Voucher No.";//NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
-            GenJourLine."Posting Date" := Rec."Posting Date";
+            GenJourLine."Document No." := CODRecFilter."AVN Voucher No.";//NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
+            GenJourLine."Posting Date" := CODRecFilter."Posting Date";
             IF GenJourLine.FindLast() then
                 GenJourLine."Line No." := GenJourLine."Line No." + 10000
             else
@@ -115,13 +125,13 @@ page 50002 "COD Receivable List"
             GenJourLine."Journal Template Name" := 'JOURNAL V';
             GenJourLine."Journal Batch Name" := 'DEFAUT';
             GenJourLine."Account Type" := GenJourLine."Account Type"::Customer;
-            GenJourLine.validate("Account No.", rec."COD Customer Code");
+            GenJourLine.validate("Account No.", CODRecFilter."COD Customer Code");
             GenJourLine."Bal. Account Type" := GenJourLine."Bal. Account Type"::"G/L Account";
-            GenJourLine.Validate("Bal. Account No.", Rec."Ledger Code");
+            GenJourLine.Validate("Bal. Account No.", CODRecFilter."Ledger Code");
             //GenJourLine."GST Group Code" := 'Goods';
-            GenJourLine.validate(Amount, Rec."COD Amount ");
-            GenJourLine.validate("Shortcut Dimension 1 Code", rec."Branch (G1)");
-            GenJourLine.validate("Shortcut Dimension 2 Code", rec."Business Vertical (G2)");
+            GenJourLine.validate(Amount, CODRecFilter."COD Amount ");
+            GenJourLine.validate("Shortcut Dimension 1 Code", CODRecFilter."Branch (G1)");
+            GenJourLine.validate("Shortcut Dimension 2 Code", CODRecFilter."Business Vertical (G2)");
             GenJourLine.Comment := 'Auto Post';
             GenJourLine.Insert(true);
             CODRec.Reset();

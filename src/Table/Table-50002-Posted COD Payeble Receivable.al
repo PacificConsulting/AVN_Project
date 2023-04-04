@@ -88,11 +88,20 @@ table 50002 "Posted COD Payeble Receivable"
             DataClassification = ToBeClassified;
 
         }
+        field(16; "Lines Created"; Boolean)
+        {
+            DataClassification = ToBeClassified;
+            Caption = 'Lines Created';
+        }
+        field(17; "Entry Posted"; Boolean)
+        {
+            DataClassification = ToBeClassified;
+        }
 
     }
     keys
     {
-        key(PK; "AVN Voucher No.")
+        key(PK; "AVN Voucher No.", "COD Customer Code", "COD Vendor Code", "Tracking No")
         {
             Clustered = true;
         }

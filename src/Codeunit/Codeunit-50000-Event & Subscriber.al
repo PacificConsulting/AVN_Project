@@ -8,31 +8,25 @@ codeunit 50000 "Event & Subscriber CU"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterPostGenJnlLine', '', true, true)]
     local procedure OnAfterPostGenJnlLine(var GenJournalLine: Record "Gen. Journal Line"; Balancing: Boolean)
     var
-        POSTEDCOD: Record "Posted COD Payeble Receivable";
+        // POSTEDCOD: Record "Posted COD Payeble Receivable";
         CODPayable: Record "COD Payable/Receivable";
-        CustVend: record "Customer/Vendor Inv. Booking";
-        Postedcustvend: Record "Posted Cust\vend Inv Booking";
+        PostedCODPayable: Record "Posted COD Payeble Receivable";
+        CODRece: Record "COD Payable/Receivable";
+        PostedCODRece: Record "Posted COD Payeble Receivable";
     begin
-        /*
+
         with GenJournalLine do
             case "Account Type" of
                 "Account Type"::Customer:
                     begin
-                        CODPayable.Reset();
-                        CODPayable.SetRange("AVN Voucher No.", GenJournalLine."Document No.");
-                        CODPayable.SetFilter("COD Customer Code", '<>%1', '');
-                        if CODPayable.FindFirst() then begin
-                            POSTEDCOD.Init();
-                            POSTEDCOD.TransferFields(CODPayable);
-                            POSTEDCOD.Insert();
-                        end;
-                        CustVend.Reset();
-                        CustVend.SetRange("AVN Document No.", GenJournalLine."Document No.");
-                        CustVend.SetFilter("Customer Code", '<>%1', '');
-                        if CustVend.FindFirst() then begin
-                            Postedcustvend.Init();
-                            Postedcustvend.TransferFields(CustVend);
-                            Postedcustvend.Insert();
+                        CODRece.Reset();
+                        CODRece.SetRange("AVN Voucher No.", GenJournalLine."Document No.");
+                        CODRece.SetFilter("COD Customer Code", '<>%1', '');
+                        if CODRece.FindFirst() then begin
+                            PostedCODRece.Init();
+                            PostedCODRece.TransferFields(CODRece);
+                            PostedCODRece."Entry Posted" := true;
+                            PostedCODRece.Insert();
                         end;
                     end;
                 "Account Type"::Vendor:
@@ -41,38 +35,31 @@ codeunit 50000 "Event & Subscriber CU"
                         CODPayable.SetRange("AVN Voucher No.", GenJournalLine."Document No.");
                         CODPayable.SetFilter("COD Vendor Code", '<>%1', '');
                         if CODPayable.FindFirst() then begin
-                            POSTEDCOD.Init();
-                            POSTEDCOD.TransferFields(CODPayable);
-                            POSTEDCOD.Insert();
-                        end;
-                        CustVend.Reset();
-                        CustVend.SetRange("AVN Document No.", GenJournalLine."Document No.");
-                        CustVend.SetFilter("Vendor Code", '<>%1', '');
-                        if CustVend.FindFirst() then begin
-                            Postedcustvend.Init();
-                            Postedcustvend.TransferFields(CustVend);
-                            Postedcustvend.Insert();
+                            PostedCODPayable.Init();
+                            PostedCODPayable.TransferFields(CODPayable);
+                            PostedCODPayable."Entry Posted" := true;
+                            PostedCODPayable.Insert();
                         end;
                     end;
             end;
-            */
+
         //<< For COD Payable and Receivalble Data flow to Posted table
-        CODPayable.Reset();
-        CODPayable.SetRange("AVN Voucher No.", GenJournalLine."Document No.");
-        CODPayable.SetFilter("COD Customer Code", '<>%1', '');
-        if CODPayable.FindFirst() then begin
-            POSTEDCOD.Init();
-            POSTEDCOD.TransferFields(CODPayable);
-            POSTEDCOD.Insert();
-        end;
-        CODPayable.Reset();
-        CODPayable.SetRange("AVN Voucher No.", GenJournalLine."Document No.");
-        CODPayable.SetFilter("COD Vendor Code", '<>%1', '');
-        if CODPayable.FindFirst() then begin
-            POSTEDCOD.Init();
-            POSTEDCOD.TransferFields(CODPayable);
-            POSTEDCOD.Insert();
-        end;
+        // CODRece.Reset();
+        // CODRece.SetRange("AVN Voucher No.", GenJournalLine."Document No.");
+        // CODRece.SetFilter("COD Customer Code", '<>%1', '');
+        // if CODRece.FindFirst() then begin
+        //     PostedCODRece.Init();
+        //     PostedCODRece.TransferFields(CODRece);
+        //     PostedCODRece.Insert();
+        // end;
+        // CODPayable.Reset();
+        // CODPayable.SetRange("AVN Voucher No.", GenJournalLine."Document No.");
+        // CODPayable.SetFilter("COD Vendor Code", '<>%1', '');
+        // if CODPayable.FindFirst() then begin
+        //     PostedCODPayable.Init();
+        //     PostedCODPayable.TransferFields(CODPayable);
+        //     PostedCODPayable.Insert();
+        // end;
         //>> For COD Payable and Receivalble Data flow to Posted table
 
         //<< For Customer/Vendor Invoice Booking Data flow to Posted table
@@ -106,7 +93,10 @@ codeunit 50000 "Event & Subscriber CU"
         CustInvbook.Reset();
         CustInvbook.SetRange("AVN Document No.", SalesInvLine."Document No.");
         CustInvbook.SetFilter("Customer Code", '<>%1', '');
+        CustInvbook.SetRange("GST Group", SalesInvLine."GST Group Code");
+        CustInvbook.SetRange(SAC, SalesInvLine."HSN/SAC Code");
         IF CustInvbook.FindFirst() then begin
+            //IF CustInvbook.FindSet() then begin
             PostedCustInvbook.Init();
             PostedCustInvbook.TransferFields(CustInvbook);
             PostedCustInvbook."Entry Posted" := true;
@@ -123,8 +113,10 @@ codeunit 50000 "Event & Subscriber CU"
         PostedVendInvbook: Record "Posted Cust\vend Inv Booking";
     begin
         VendInvbook.Reset();
-        VendInvbook.SetRange("AVN Document No.", PurchInvHeader."No.");
+        VendInvbook.SetRange("AVN Document No.", PurchInvLine."Document No.");
         VendInvbook.SetFilter("Customer Code", '<>%1', '');
+        VendInvbook.SetRange("GST Group", PurchInvLine."GST Group Code");
+        VendInvbook.SetRange(SAC, PurchInvLine."HSN/SAC Code");
         IF VendInvbook.FindFirst() then begin
             PostedVendInvbook.Init();
             PostedVendInvbook.TransferFields(VendInvbook);
