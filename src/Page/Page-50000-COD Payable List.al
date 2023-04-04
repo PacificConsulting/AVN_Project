@@ -70,6 +70,10 @@ page 50000 "COD Payable List"
                 {
                     ToolTip = 'It is Indicate Lines already Created for journal Voucher';
                 }
+                field("Entry Posted"; Rec."Entry Posted")
+                {
+                    ToolTip = 'It is Indicate Lines are posted from journal Voucher';
+                }
             }
         }
     }
@@ -118,7 +122,6 @@ page 50000 "COD Payable List"
             GenJourLine.SetRange("Journal Template Name", 'JOURNAL V');
             GenJourLine.SetRange("Journal Batch Name", 'DEFAULT');
             GenJourLine.Init();
-            GenJourLine."Document No." := CODPayFilter."AVN Voucher No.";//NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
             GenJourLine."Posting Date" := CODPayFilter."Posting Date";
             IF GenJourLine.FindLast() then
                 GenJourLine."Line No." := GenJourLine."Line No." + 10000
@@ -127,6 +130,8 @@ page 50000 "COD Payable List"
 
             GenJourLine."Journal Template Name" := 'JOURNAL V';
             GenJourLine."Journal Batch Name" := 'DEFAULT';
+            GenJourLine.Insert(true);
+            GenJourLine."Document No." := CODPayFilter."AVN Voucher No.";//NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
             GenJourLine."Account Type" := GenJourLine."Account Type"::Vendor;
             GenJourLine.validate("Account No.", CODPayFilter."COD Vendor Code");
             GenJourLine."Bal. Account Type" := GenJourLine."Bal. Account Type"::"G/L Account";
@@ -135,7 +140,7 @@ page 50000 "COD Payable List"
             GenJourLine.validate("Shortcut Dimension 1 Code", CODPayFilter."Branch (G1)");
             GenJourLine.validate("Shortcut Dimension 2 Code", CODPayFilter."Business Vertical (G2)");
             GenJourLine.Comment := 'Auto Post';
-            GenJourLine.Insert(true);
+            GenJourLine.Modify();
 
             CODPay.Reset();
             CODPay.SetRange("AVN Voucher No.", GenJourLine."Document No.");

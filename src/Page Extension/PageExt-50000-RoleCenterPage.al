@@ -100,6 +100,22 @@ pageextension 50000 "Role Center for Page" extends "Order Processor Role Center"
                         RunObject = page 50004;
                         ToolTip = 'Posted data of Client Invoice Booking';
                     }
+                    action("Posted COD Payable List")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Posted COD Payable List';
+                        Image = EditList;
+                        RunObject = Page 50006;
+                        ToolTip = 'Posted data of COD Payable';
+                    }
+                    action("Posted COD Receivable List")
+                    {
+                        ApplicationArea = Basic, Suite;
+                        Caption = 'Posted COD Receivable List';
+                        Image = EditList;
+                        RunObject = Page 50007;
+                        ToolTip = 'Posted data of COD Receivable';
+                    }
                 }
             }
         }

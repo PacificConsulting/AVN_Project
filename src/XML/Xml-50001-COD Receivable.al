@@ -1,6 +1,6 @@
 xmlport 50001 "COD Receivalble"
 {
-    Caption = 'COD Payable';
+    Caption = 'COD Receivalble';
     DefaultFieldsValidation = true;
     Direction = Import;
     Format = VariableText;

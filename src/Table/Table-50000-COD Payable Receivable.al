@@ -92,6 +92,12 @@ table 50000 "COD Payable/Receivable"
             DataClassification = ToBeClassified;
             Caption = 'Lines Created';
         }
+        field(17; "Entry Posted"; Boolean)
+        {
+            DataClassification = ToBeClassified;
+            Editable = false;
+        }
+
 
     }
     keys

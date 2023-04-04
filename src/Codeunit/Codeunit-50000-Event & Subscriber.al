@@ -27,6 +27,8 @@ codeunit 50000 "Event & Subscriber CU"
                             PostedCODRece.TransferFields(CODRece);
                             PostedCODRece."Entry Posted" := true;
                             PostedCODRece.Insert();
+                            CODRece."Entry Posted" := true;
+                            CODRece.Modify();
                         end;
                     end;
                 "Account Type"::Vendor:
@@ -39,6 +41,8 @@ codeunit 50000 "Event & Subscriber CU"
                             PostedCODPayable.TransferFields(CODPayable);
                             PostedCODPayable."Entry Posted" := true;
                             PostedCODPayable.Insert();
+                            CODPayable."Entry Posted" := true;
+                            CODPayable.Modify();
                         end;
                     end;
             end;
