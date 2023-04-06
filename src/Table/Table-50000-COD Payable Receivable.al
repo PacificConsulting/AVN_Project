@@ -20,7 +20,7 @@ table 50000 "COD Payable/Receivable"
         }
         field(4; "COD Customer Code"; Code[20])
         {
-            Caption = 'COD Client Payable Code';
+            Caption = 'COD Client Code';
             DataClassification = ToBeClassified;
             TableRelation = Customer."No.";
         }

@@ -21,7 +21,7 @@ xmlport 50001 "COD Receivalble"
                 fieldelement(TrackingNo; CODPayableReceivable."Tracking No")
                 {
                 }
-                fieldelement(CODClientPayableCode; CODPayableReceivable."COD Vendor Code")
+                fieldelement(CODClientPayableCode; CODPayableReceivable."COD Customer Code")
                 {
                 }
                 fieldelement(PortalReportNumber; CODPayableReceivable."Portal Report Number ")
@@ -93,7 +93,7 @@ xmlport 50001 "COD Receivalble"
 
     trigger OnPostXmlPort()
     begin
-        Message('Done');
+        Message('Data Uploaded Successfully');
     end;
 
     var

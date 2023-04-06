@@ -99,6 +99,7 @@ page 50002 "COD Receivable List"
                         repeat
                             GenerateJournalVoucher(CODRec);
                         until CODRec.Next() = 0;
+                    Message('Journal Voucher created ');
                 end;
             }
         }
@@ -113,7 +114,7 @@ page 50002 "COD Receivable List"
         IF CODRecFilter."COD Customer Code" <> '' then begin
             GenJourLine.Reset();
             GenJourLine.SetRange("Journal Template Name", 'JOURNAL V');
-            GenJourLine.SetRange("Journal Batch Name", 'DEFAUT');
+            GenJourLine.SetRange("Journal Batch Name", 'DEFAULT');
             GenJourLine.Init();
             GenJourLine."Document No." := CODRecFilter."AVN Voucher No.";//NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
             GenJourLine."Posting Date" := CODRecFilter."Posting Date";
@@ -123,7 +124,7 @@ page 50002 "COD Receivable List"
                 GenJourLine."Line No." := 10000;
 
             GenJourLine."Journal Template Name" := 'JOURNAL V';
-            GenJourLine."Journal Batch Name" := 'DEFAUT';
+            GenJourLine."Journal Batch Name" := 'DEFAULT';
             GenJourLine."Account Type" := GenJourLine."Account Type"::Customer;
             GenJourLine.validate("Account No.", CODRecFilter."COD Customer Code");
             GenJourLine."Bal. Account Type" := GenJourLine."Bal. Account Type"::"G/L Account";
@@ -141,7 +142,7 @@ page 50002 "COD Receivable List"
                 CODRec."Lines Created" := true;
                 CODRec.Modify();
             end;
-            Message('Journal Voucher created with Document No. %1', GenJourLine."Document No.");
+            //Message('Journal Voucher created with Document No. %1', GenJourLine."Document No.");
         end;
         // IF Not CODEUNIT.RUN(CODEUNIT::"Gen. Jnl.-Post", GenJourLine) then begin
 

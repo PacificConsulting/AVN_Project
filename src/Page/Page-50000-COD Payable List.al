@@ -102,6 +102,7 @@ page 50000 "COD Payable List"
                         repeat
                             GenerateJournalVoucher(CODPay);
                         until CODPay.Next() = 0;
+                    Message('Journal Voucher created ');
                 end;
             }
         }
@@ -150,7 +151,7 @@ page 50000 "COD Payable List"
                 CODPay.Modify();
             end;
         end;
-        Message('Journal Voucher created with Document No. %1', GenJourLine."Document No.");
+        //Message('Journal Voucher created with Document No. %1', GenJourLine."Document No.");
 
         // IF Not CODEUNIT.RUN(CODEUNIT::"Gen. Jnl.-Post", GenJourLine) then begin
 
