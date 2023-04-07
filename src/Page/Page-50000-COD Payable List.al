@@ -5,7 +5,7 @@ page 50000 "COD Payable List"
     PageType = List;
     SourceTable = "COD Payable/Receivable";
     UsageCategory = Lists;
-    SourceTableView = where("COD Vendor Code" = filter(<> ''));
+    SourceTableView = where("COD Vendor Code" = filter(<> ''), "Entry Posted" = filter(false));
 
     layout
     {

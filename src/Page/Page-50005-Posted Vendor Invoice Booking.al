@@ -87,18 +87,6 @@ page 50005 "Posted Vendor Inv. Booking"
                     ToolTip = 'Specifies the value of the Business Vertical (G2) field.';
                 }
 
-                field("Sales Person"; Rec."Sales Person")
-                {
-                    ToolTip = 'Specifies the value of the Sales Person field.';
-                }
-                field("Shipped to address"; Rec."Shipped to address")
-                {
-                    ToolTip = 'Specifies the value of the Shipped to address field.';
-                }
-                field("Shipyaari ID No."; Rec."Shipyaari ID No.")
-                {
-                    ToolTip = 'Specifies the value of the Shipyaari ID No. field.';
-                }
                 field(Created; Rec."Order Created")
                 {
 

@@ -57,9 +57,9 @@ xmlport 50003 "Client invoice Booking"
                 fieldelement(SalesPerson; ClientVendorInvoiceBooking."Sales Person")
                 {
                 }
-                fieldelement(SalesPerson; ClientVendorInvoiceBooking."Sales Person")
-                {
-                }
+                // fieldelement(SalesPerson; ClientVendorInvoiceBooking."Sales Person")
+                // {
+                // }
                 trigger OnAfterInitRecord()
                 begin
                     I += 1;

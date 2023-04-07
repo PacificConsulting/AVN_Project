@@ -26,11 +26,10 @@ page 50001 "Customer/Vendor Inv. Booking"
                 {
                     ToolTip = 'Specifies the value of the Tracking No field.';
                 }
-                field("Tracking No for RTO If Diff."; Rec."Tracking No for RTO If Diff.")
+                field("Shipyaari ID No."; Rec."Shipyaari ID No.")
                 {
-                    ToolTip = 'Specifies the value of the Tracking No for RTO If Different field.';
+                    ToolTip = 'Specifies the value of the Shipyaari ID No. field.';
                 }
-
                 field("Client Code"; Rec."Customer Code")
                 {
                     ToolTip = 'Specifies the value of the Client Code field.';
@@ -39,15 +38,11 @@ page 50001 "Customer/Vendor Inv. Booking"
                 {
                     ToolTip = 'Specifies the value of the Branch for GST (Location) field.';
                 }
-                field("Order From Address"; Rec."Order From Address")
+                field("Shipped to address"; Rec."Shipped to address")
                 {
-                    ToolTip = 'Specifies the value of the Order From Address field.';
+                    ToolTip = 'Specifies the value of the Shipped to address field.';
                 }
 
-                field("Due Date"; Rec."Due Date")
-                {
-                    ToolTip = 'Specifies the value of the Due Date field.';
-                }
                 field("Ledger Code"; Rec."Ledger Code")
                 {
                     ToolTip = 'Specifies the value of the Ledger Code field.';
@@ -81,14 +76,7 @@ page 50001 "Customer/Vendor Inv. Booking"
                 {
                     ToolTip = 'Specifies the value of the Sales Person field.';
                 }
-                field("Shipped to address"; Rec."Shipped to address")
-                {
-                    ToolTip = 'Specifies the value of the Shipped to address field.';
-                }
-                field("Shipyaari ID No."; Rec."Shipyaari ID No.")
-                {
-                    ToolTip = 'Specifies the value of the Shipyaari ID No. field.';
-                }
+
                 field(Select; Rec.Select)
                 {
                     ToolTip = 'Specifies the value of the Select field.';

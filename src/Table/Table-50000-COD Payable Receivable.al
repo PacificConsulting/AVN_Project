@@ -80,6 +80,7 @@ table 50000 "COD Payable/Receivable"
         {
             Caption = 'Select';
             DataClassification = ToBeClassified;
+
         }
         field(15; "Client Name"; Text[50])
         {
@@ -91,6 +92,7 @@ table 50000 "COD Payable/Receivable"
         {
             DataClassification = ToBeClassified;
             Caption = 'Lines Created';
+            Editable = false;
         }
         field(17; "Entry Posted"; Boolean)
         {
