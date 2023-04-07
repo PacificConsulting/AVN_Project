@@ -139,6 +139,7 @@ table 50001 "Customer/Vendor Inv. Booking"
             DataClassification = ToBeClassified;
         }
 
+
     }
     keys
     {

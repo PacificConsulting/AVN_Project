@@ -118,7 +118,7 @@ codeunit 50000 "Event & Subscriber CU"
     begin
         VendInvbook.Reset();
         VendInvbook.SetRange("AVN Document No.", PurchInvLine."Document No.");
-        VendInvbook.SetFilter("Customer Code", '<>%1', '');
+        VendInvbook.SetFilter("Vendor Code", '<>%1', '');
         VendInvbook.SetRange("GST Group", PurchInvLine."GST Group Code");
         VendInvbook.SetRange(SAC, PurchInvLine."HSN/SAC Code");
         IF VendInvbook.FindFirst() then begin

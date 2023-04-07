@@ -116,7 +116,6 @@ page 50002 "COD Receivable List"
             GenJourLine.SetRange("Journal Template Name", 'JOURNAL V');
             GenJourLine.SetRange("Journal Batch Name", 'DEFAULT');
             GenJourLine.Init();
-            GenJourLine."Document No." := CODRecFilter."AVN Voucher No.";//NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
             GenJourLine."Posting Date" := CODRecFilter."Posting Date";
             IF GenJourLine.FindLast() then
                 GenJourLine."Line No." := GenJourLine."Line No." + 10000
@@ -125,6 +124,8 @@ page 50002 "COD Receivable List"
 
             GenJourLine."Journal Template Name" := 'JOURNAL V';
             GenJourLine."Journal Batch Name" := 'DEFAULT';
+            GenJourLine.Insert(true);
+            GenJourLine."Document No." := CODRecFilter."AVN Voucher No.";//NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
             GenJourLine."Account Type" := GenJourLine."Account Type"::Customer;
             GenJourLine.validate("Account No.", CODRecFilter."COD Customer Code");
             GenJourLine."Bal. Account Type" := GenJourLine."Bal. Account Type"::"G/L Account";
@@ -134,7 +135,7 @@ page 50002 "COD Receivable List"
             GenJourLine.validate("Shortcut Dimension 1 Code", CODRecFilter."Branch (G1)");
             GenJourLine.validate("Shortcut Dimension 2 Code", CODRecFilter."Business Vertical (G2)");
             GenJourLine.Comment := 'Auto Post';
-            GenJourLine.Insert(true);
+            GenJourLine.Modify();
             CODRec.Reset();
             CODRec.SetRange("AVN Voucher No.", GenJourLine."Document No.");
             CODRec.SetRange("COD Customer Code", GenJourLine."Account No.");

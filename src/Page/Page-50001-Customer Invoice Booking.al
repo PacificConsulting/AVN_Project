@@ -5,7 +5,7 @@ page 50001 "Customer/Vendor Inv. Booking"
     PageType = List;
     SourceTable = "Customer/Vendor Inv. Booking";
     UsageCategory = Lists;
-    SourceTableView = where("Customer Code" = filter(<> ''));
+    SourceTableView = where("Customer Code" = filter(<> ''), "Entry Posted" = filter(false));
     RefreshOnActivate = true;
 
     layout
