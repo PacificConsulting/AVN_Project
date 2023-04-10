@@ -103,6 +103,10 @@ page 50003 "Vendor Inv. Booking"
                 {
 
                 }
+                field("Entry Posted"; Rec."Entry Posted")
+                {
+
+                }
             }
         }
     }

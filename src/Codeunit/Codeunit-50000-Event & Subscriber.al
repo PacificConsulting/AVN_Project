@@ -99,15 +99,17 @@ codeunit 50000 "Event & Subscriber CU"
         CustInvbook.SetFilter("Customer Code", '<>%1', '');
         CustInvbook.SetRange("GST Group", SalesInvLine."GST Group Code");
         CustInvbook.SetRange(SAC, SalesInvLine."HSN/SAC Code");
-        IF CustInvbook.FindFirst() then begin
-            //IF CustInvbook.FindSet() then begin
-            PostedCustInvbook.Init();
-            PostedCustInvbook.TransferFields(CustInvbook);
-            PostedCustInvbook."Entry Posted" := true;
-            PostedCustInvbook.Insert();
-            CustInvbook."Entry Posted" := true;
-            CustInvbook.Modify();
-        end;
+        //IF CustInvbook.FindFirst() then begin
+        IF CustInvbook.FindSet() then
+            repeat
+                PostedCustInvbook.Init();
+                PostedCustInvbook.TransferFields(CustInvbook);
+                PostedCustInvbook."Entry Posted" := true;
+                PostedCustInvbook.Insert();
+                CustInvbook."Entry Posted" := true;
+                CustInvbook.Modify();
+            until CustInvbook.Next() = 0;
+        // end;
     end;
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterPostPurchLine', '', true, true)]
@@ -121,14 +123,16 @@ codeunit 50000 "Event & Subscriber CU"
         VendInvbook.SetFilter("Vendor Code", '<>%1', '');
         VendInvbook.SetRange("GST Group", PurchInvLine."GST Group Code");
         VendInvbook.SetRange(SAC, PurchInvLine."HSN/SAC Code");
-        IF VendInvbook.FindFirst() then begin
-            PostedVendInvbook.Init();
-            PostedVendInvbook.TransferFields(VendInvbook);
-            PostedVendInvbook."Entry Posted" := true;
-            PostedVendInvbook.Insert();
-            VendInvbook."Entry Posted" := true;
-            VendInvbook.Modify();
-        end;
+        IF VendInvbook.FindSet() then
+            repeat
+                PostedVendInvbook.Init();
+                PostedVendInvbook.TransferFields(VendInvbook);
+                PostedVendInvbook."Entry Posted" := true;
+                PostedVendInvbook.Insert();
+                VendInvbook."Entry Posted" := true;
+                VendInvbook.Modify();
+            until VendInvbook.Next() = 0;
+        //end;
     end;
 
 

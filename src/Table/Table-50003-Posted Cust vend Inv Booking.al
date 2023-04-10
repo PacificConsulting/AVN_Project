@@ -143,7 +143,7 @@ table 50003 "Posted Cust\vend Inv Booking"
     }
     keys
     {
-        key(PK; "AVN Document No.")
+        key(PK; "AVN Document No.", "Tracking No", "Customer Code", "Vendor Code")
         {
             Clustered = true;
         }

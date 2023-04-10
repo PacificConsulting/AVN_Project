@@ -137,7 +137,7 @@ page 50000 "COD Payable List"
             GenJourLine.validate("Account No.", CODPayFilter."COD Vendor Code");
             GenJourLine."Bal. Account Type" := GenJourLine."Bal. Account Type"::"G/L Account";
             GenJourLine.Validate("Bal. Account No.", CODPayFilter."Ledger Code");
-            GenJourLine.validate(Amount, CODPayFilter."COD Amount ");
+            GenJourLine.validate("Credit Amount", CODPayFilter."COD Amount ");
             GenJourLine.validate("Shortcut Dimension 1 Code", CODPayFilter."Branch (G1)");
             GenJourLine.validate("Shortcut Dimension 2 Code", CODPayFilter."Business Vertical (G2)");
             GenJourLine.Comment := 'Auto Post';
