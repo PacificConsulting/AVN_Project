@@ -114,6 +114,60 @@ page 50003 "Vendor Inv. Booking"
     {
         area(Processing)
         {
+            action("Select All Lines")
+            {
+                Caption = 'Select All Lines';
+                Image = Line;
+                Promoted = true;
+                PromotedIsBig = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+                trigger OnAction()
+                var
+                    vendBookLine: Record "Customer/Vendor Inv. Booking";
+
+                begin
+                    //CurrPage.SetSelectionFilter(vendBookLine);
+                    vendBookLine.Reset();
+                    vendBookLine.SetRange(Select, false);
+                    vendBookLine.SetRange("Order Created", false);
+                    vendBookLine.SetRange("Entry Posted", false);
+                    vendBookLine.SetFilter("Vendor Code", '<>%1', '');
+                    IF vendBookLine.FindSet() then
+                        repeat
+                            vendBookLine.Select := true;
+                            vendBookLine.Modify();
+                        until vendBookLine.Next() = 0;
+                    Message('All Lines has been selected');
+                end;
+            }
+            action("De-select All Lines")
+            {
+                Caption = 'De-select All Lines';
+                Image = Line;
+                Promoted = true;
+                PromotedIsBig = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+                trigger OnAction()
+                var
+                    vendBookLine: Record "Customer/Vendor Inv. Booking";
+
+                begin
+
+                    vendBookLine.Reset();
+                    vendBookLine.SetRange(Select, true);
+                    vendBookLine.SetRange("Order Created", false);
+                    vendBookLine.SetRange("Entry Posted", false);
+                    vendBookLine.SetFilter("Vendor Code", '<>%1', '');
+                    IF vendBookLine.FindSet() then
+                        repeat
+                            vendBookLine.Select := false;
+                            vendBookLine.Modify();
+                        until vendBookLine.Next() = 0;
+                    Message('All Lines has been De-selected');
+                end;
+            }
             action("Create Purchase Invoice")
             {
                 Caption = 'Create Purchase Invoice';

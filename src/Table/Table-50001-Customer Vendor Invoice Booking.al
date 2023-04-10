@@ -126,12 +126,18 @@ table 50001 "Customer/Vendor Inv. Booking"
         {
             Caption = 'Select';
             DataClassification = ToBeClassified;
+            // trigger OnValidate()
+            // begin
+            //     IF Rec."Order Created" then
+            //         if Select <> xRec.Select then
+            //             Error('Order is created,You can not de-select line');
+            // end;
         }
         field(23; "Order Created"; Boolean)
         {
             Caption = 'Order Created';
             DataClassification = ToBeClassified;
-            //Editable = false;
+            Editable = false;
         }
         field(24; "Entry Posted"; Boolean)
         {
