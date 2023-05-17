@@ -119,6 +119,30 @@ page 50001 "Customer/Vendor Inv. Booking"
                     Message('All Lines has been selected');
                 end;
             }
+            action("Order Create false")
+            {
+                //Caption = 'Select All Lines';
+                Image = Line;
+                Promoted = true;
+                PromotedIsBig = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+                Visible = false;
+                trigger OnAction()
+                var
+                    vendBookLine: Record "Customer/Vendor Inv. Booking";
+                begin
+                    CurrPage.SetSelectionFilter(vendBookLine);
+                    vendBookLine.SetRange("Order Created", true);
+                    vendBookLine.SetFilter("Customer Code", '<>%1', '');
+                    IF vendBookLine.FindSet() then
+                        repeat
+                            vendBookLine."Order Created" := false;
+                            vendBookLine.Modify();
+                        until vendBookLine.Next() = 0;
+                    Message('All Lines has been selected');
+                end;
+            }
             action("De-select All Lines")
             {
                 Caption = 'De-select All Lines';
@@ -158,28 +182,42 @@ page 50001 "Customer/Vendor Inv. Booking"
                     CustInv: Record "Customer/Vendor Inv. Booking";
                     CustInvNew: Record "Customer/Vendor Inv. Booking";
                     DocNo: code[20];
+                    Progress: Dialog;
+                    Counter: Integer;
+                    Text000: Label 'Counting to ------ #1';
+                    SalesLineFilter: Record 37;
                 begin
-                    CustInv.Reset();
+                    //CustInv.Reset();
+                    Counter := 0;
+                    Progress.OPEN(Text000, Counter);
+                    currpage.SetSelectionFilter(CustInv);
                     CustInv.SetRange(Select, true);
-                    CustInv.SetFilter("Customer Code", '<>%1', '');
-
+                    CustInv.SetRange("Order Created", false);
                     IF CustInv.FindSet() then
                         repeat
-                            CustInvNew.Reset();
-                            CustInvNew.SetRange(Select, true);
-                            CustInvNew.SetRange("AVN Document No.", CustInv."AVN Document No.");
-                            CustInvNew.SetRange("Ledger Code", CustInv."Ledger Code");
-                            CustInvNew.SetRange("GST Group", CustInv."GST Group");
-                            CustInvNew.SetRange("Order Created", false);
-                            IF CustInvNew.FindSet() then
-                                repeat
-                                    CreateSalesInvoice(CustInvNew);
-                                until CustInvNew.Next() = 0;
-                            IF DocNo <> CustInvNew."AVN Document No." then
-                                Message('Sales Invoice "Order Created" with Document No. %1', CustInvNew."AVN Document No.");
-                            DocNo := CustInvNew."AVN Document No.";
+                            CreateSalesInvoice(CustInv);
+                            IF DocNo <> CustInv."AVN Document No." then begin
+                                Message('Sales Invoice "Order Created" with Document No. %1', CustInv."AVN Document No.");
+                            end;
+                            DocNo := CustInv."AVN Document No.";
+                            Counter := Counter + 1;
+                            Progress.Update();
+                            Sleep(3);
                         until CustInv.Next() = 0;
 
+                    SalesLineFilter.Reset();
+                    SalesLineFilter.SetCurrentKey(Type, "Document No.", "No.", "HSN/SAC Code");
+                    SalesLineFilter.SetRange(Type, SalesLineFilter.Type::"G/L Account");
+                    SalesLineFilter.SetFilter("Customer Inv Amount", '<>%1', 0);
+                    SalesLineFilter.SetRange("Document Type", SalesLineFilter."Document Type"::Invoice);
+                    //SalesLineFilter.SetRange("Document No.", CustInv."AVN Document No.");
+                    IF SalesLineFilter.FindSet() then
+                        repeat
+                            SalesLineFilter.Validate("Unit Price", SalesLineFilter."Customer Inv Amount");
+                            SalesLineFilter."Customer Inv Amount" := 0;
+                            SalesLineFilter.Modify();
+                        until SalesLineFilter.Next() = 0;
+                    Progress.CLOSE();
                 end;
             }
         }
@@ -195,7 +233,9 @@ page 50001 "Customer/Vendor Inv. Booking"
         CustInvBookSL: Record "Customer/Vendor Inv. Booking";
         AmtBeforeGST: Decimal;
     begin
+
         SalesHFilter.Reset();
+        SalesHFilter.SetCurrentKey("No.");
         SalesHFilter.SetRange("No.", CustInvBookFilter."AVN Document No.");
         IF Not SalesHFilter.FindFirst() then begin
             SalesHeader.Init();
@@ -214,6 +254,8 @@ page 50001 "Customer/Vendor Inv. Booking"
         end;
 
         SalesLineFilter.Reset();
+        SalesLineFilter.SetCurrentKey(Type, "Document No.", "No.", "HSN/SAC Code");
+        SetSelectionFilter(CustInvBookFilter);
         SalesLineFilter.SetRange(Type, SalesLineFilter.Type::"G/L Account");
         SalesLineFilter.SetRange("Document No.", CustInvBookFilter."AVN Document No.");
         SalesLineFilter.SetRange("No.", CustInvBookFilter."Ledger Code");
@@ -235,7 +277,7 @@ page 50001 "Customer/Vendor Inv. Booking"
             SaleslineInit.Validate("No.", CustInvBookFilter."Ledger Code");
             SalesLineInit.Validate(Quantity, 1);
 
-            SaleslineInit.Validate("Unit Price", CustInvBookFilter."Amount Before GST");
+            SalesLineInit."Customer Inv Amount" := CustInvBookFilter."Amount Before GST";
             SaleslineInit.Validate("GST Group Code", CustInvBookFilter."GST Group");
             SaleslineInit.Validate("HSN/SAC Code", CustInvBookFilter.SAC);
             SalesLineInit.SetRange("GST Credit", SalesLineInit."GST Credit"::Availment);
@@ -243,14 +285,10 @@ page 50001 "Customer/Vendor Inv. Booking"
             CustInvBookFilter."Order Created" := true;
             CustInvBookFilter.Modify();
         end else begin
-            AmtBeforeGST += SalesLineFilter."Unit Price" + CustInvBookFilter."Amount Before GST";
-            SalesLineFilter.Validate("Unit Price", AmtBeforeGST);
+            SalesLineFilter."Customer Inv Amount" += CustInvBookFilter."Amount Before GST";
             SalesLineFilter.Modify();
             CustInvBookFilter."Order Created" := true;
             CustInvBookFilter.Modify();
         end;
     end;
-
-    //end;
-    //end;
 }
