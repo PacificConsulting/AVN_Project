@@ -94,7 +94,7 @@ page 50000 "COD Payable List"
                     CODPay: Record "COD Payable/Receivable";
                     CODPayNew: Record "COD Payable/Receivable";
                 begin
-                    CODPay.Reset();
+                    CurrPage.SetSelectionFilter(CODPay);
                     CODPay.SetRange(Select, true);
                     CODPay.SetFilter("COD Vendor Code", '<>%1', '');
                     CODPay.SetRange("Lines Created", false);

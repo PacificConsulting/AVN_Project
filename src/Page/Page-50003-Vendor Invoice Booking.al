@@ -125,9 +125,14 @@ page 50003 "Vendor Inv. Booking"
                 trigger OnAction()
                 var
                     vendBookLine: Record "Customer/Vendor Inv. Booking";
+                    Progress: Dialog;
+                    Counter: Integer;
+                    Text000: Label 'Selecting Lines to ------ #1';
 
                 begin
                     //CurrPage.SetSelectionFilter(vendBookLine);
+                    Counter := 0;
+                    Progress.OPEN(Text000, Counter);
                     vendBookLine.Reset();
                     vendBookLine.SetRange(Select, false);
                     vendBookLine.SetRange("Order Created", false);
@@ -137,7 +142,11 @@ page 50003 "Vendor Inv. Booking"
                         repeat
                             vendBookLine.Select := true;
                             vendBookLine.Modify();
+                            Counter := Counter + 1;
+                            Progress.Update();
+                            Sleep(3);
                         until vendBookLine.Next() = 0;
+                    Progress.Close();
                     Message('All Lines has been selected');
                 end;
             }
@@ -152,8 +161,12 @@ page 50003 "Vendor Inv. Booking"
                 trigger OnAction()
                 var
                     vendBookLine: Record "Customer/Vendor Inv. Booking";
+                    Progress: Dialog;
+                    Counter: Integer;
+                    Text000: Label 'De-selecting to ------ #1';
                 begin
-
+                    Counter := 0;
+                    Progress.OPEN(Text000, Counter);
                     vendBookLine.Reset();
                     vendBookLine.SetRange(Select, true);
                     vendBookLine.SetRange("Order Created", false);
@@ -163,8 +176,36 @@ page 50003 "Vendor Inv. Booking"
                         repeat
                             vendBookLine.Select := false;
                             vendBookLine.Modify();
+                            Counter := Counter + 1;
+                            Progress.Update();
+                            Sleep(3);
                         until vendBookLine.Next() = 0;
+                        Progress.Close();
                     Message('All Lines has been De-selected');
+                end;
+            }
+            action("Order Create false")
+            {
+                //Caption = 'Select All Lines';
+                Image = Line;
+                Promoted = true;
+                PromotedIsBig = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+                Visible = false;
+                trigger OnAction()
+                var
+                    vendBookLine: Record "Customer/Vendor Inv. Booking";
+                begin
+                    CurrPage.SetSelectionFilter(vendBookLine);
+                    vendBookLine.SetRange("Order Created", true);
+                    vendBookLine.SetFilter("Vendor Code", '<>%1', '');
+                    IF vendBookLine.FindSet() then
+                        repeat
+                            vendBookLine."Order Created" := false;
+                            vendBookLine.Modify();
+                        until vendBookLine.Next() = 0;
+                    Message('All Lines has been selected');
                 end;
             }
             action("Create Purchase Invoice")
@@ -209,7 +250,7 @@ page 50003 "Vendor Inv. Booking"
                     IF PurchLineFilter.FindSet() then
                         repeat
                             PurchLineFilter.Validate("Direct Unit Cost", PurchLineFilter."Vendor Inv Amount");
-                            PurchLineFilter."Vendor Inv Amount" := 0;
+                            //PurchLineFilter."Vendor Inv Amount" := 0;
                             PurchLineFilter.Modify();
                         until PurchLineFilter.Next() = 0;
                 end;
@@ -238,6 +279,7 @@ page 50003 "Vendor Inv. Booking"
             PurchHeader.Validate("Buy-from Vendor No.", VendInvBookFilter."Vendor Code");
             PurchHeader.Validate("Posting Date", VendInvBookFilter."Posting Date");
             PurchHeader.Validate("Location Code", VendInvBookFilter."Branch for GST (Location)");
+            PurchHeader.Validate("Order Address Code", VendInvBookFilter."Order From Address");  //PCPL-25/180523
             PurchHeader.Validate("Shortcut Dimension 1 Code", VendInvBookFilter."Branch (G1)");
             PurchHeader.Validate("Shortcut Dimension 2 Code", VendInvBookFilter."Business Vertical (G2)");
             PurchHeader.Validate("Vendor Invoice No.", VendInvBookFilter."Vendor Invoice No.");
@@ -280,7 +322,7 @@ page 50003 "Vendor Inv. Booking"
         end else begin
             // AmtBeforeGST += PurchLineFilter."Direct Unit Cost" + VendInvBookFilter."Amount Before GST";
             //PurchLineFilter.Validate("Direct Unit Cost", AmtBeforeGST);
-            PurchLineFilter."Vendor Inv Amount" := VendInvBookFilter."Amount Before GST";
+            PurchLineFilter."Vendor Inv Amount" += VendInvBookFilter."Amount Before GST";
             PurchLineFilter.Modify();
             VendInvBookFilter."Order Created" := true;
             VendInvBookFilter.Modify();

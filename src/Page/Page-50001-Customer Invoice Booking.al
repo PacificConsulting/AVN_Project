@@ -103,9 +103,14 @@ page 50001 "Customer/Vendor Inv. Booking"
                 trigger OnAction()
                 var
                     vendBookLine: Record "Customer/Vendor Inv. Booking";
+                    Progress: Dialog;
+                    Counter: Integer;
+                    Text000: Label 'Selecting Lines to ------ #1';
 
                 begin
                     //CurrPage.SetSelectionFilter(vendBookLine);
+                    Counter := 0;
+                    Progress.OPEN(Text000, Counter);
                     vendBookLine.Reset();
                     vendBookLine.SetRange(Select, false);
                     vendBookLine.SetRange("Order Created", false);
@@ -115,8 +120,12 @@ page 50001 "Customer/Vendor Inv. Booking"
                         repeat
                             vendBookLine.Select := true;
                             vendBookLine.Modify();
+                            Counter := Counter + 1;
+                            Progress.Update();
+                            Sleep(3);
                         until vendBookLine.Next() = 0;
                     Message('All Lines has been selected');
+                    Progress.Close();
                 end;
             }
             action("Order Create false")
@@ -154,7 +163,12 @@ page 50001 "Customer/Vendor Inv. Booking"
                 trigger OnAction()
                 var
                     vendBookLine: Record "Customer/Vendor Inv. Booking";
+                    Progress: Dialog;
+                    Counter: Integer;
+                    Text000: Label 'De-selecting to ------ #1';
                 begin
+                    Counter := 0;
+                    Progress.OPEN(Text000, Counter);
                     vendBookLine.Reset();
                     vendBookLine.SetRange(Select, true);
                     vendBookLine.SetRange("Order Created", false);
@@ -164,7 +178,11 @@ page 50001 "Customer/Vendor Inv. Booking"
                         repeat
                             vendBookLine.Select := false;
                             vendBookLine.Modify();
+                            Counter := Counter + 1;
+                            Progress.Update();
+                            Sleep(3);
                         until vendBookLine.Next() = 0;
+                    Progress.Close();
                     Message('All Lines has been De-selected');
                 end;
             }
