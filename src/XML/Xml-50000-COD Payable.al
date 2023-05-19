@@ -4,7 +4,7 @@ xmlport 50000 "COD Payable"
     DefaultFieldsValidation = true;
     Direction = Import;
     Format = VariableText;
-    FormatEvaluate = Legacy; //
+    FormatEvaluate = Legacy; ////
 
 
     schema
