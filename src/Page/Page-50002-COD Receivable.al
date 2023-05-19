@@ -102,6 +102,65 @@ page 50002 "COD Receivable List"
                     Message('Journal Voucher created ');
                 end;
             }
+            action("Select All Lines")
+            {
+                Caption = 'Select All Lines';
+                Image = Line;
+                Promoted = true;
+                PromotedIsBig = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+                trigger OnAction()
+                var
+                    //vendBookLine: Record "Customer/Vendor Inv. Booking";
+                    codpaybleline: record "COD Payable/Receivable";
+
+                begin
+                    //CurrPage.SetSelectionFilter(vendBookLine);
+                    codpaybleline.Reset();
+                    codpaybleline.SetRange(Select, false);
+                    codpaybleline.SetRange("Lines Created", false);
+                    codpaybleline.SetRange("Entry Posted", false);
+                    //codpaybleline.SetFilter("COD Vendor Code", '<>%1', '');
+                    codpaybleline.SetFilter("COD Customer Code", '<>%1', '');  //PCPL-25/020523 above code comment
+                    IF codpaybleline.FindSet() then
+                        repeat
+                            codpaybleline.Select := true;
+                            codpaybleline.Modify();
+                        until codpaybleline.Next() = 0;
+                    Message('All Lines has been selected');
+                end;
+            }
+            action("De-select All Lines")
+            {
+                Caption = 'De-select All Lines';
+                Image = Line;
+                Promoted = true;
+                PromotedIsBig = true;
+                PromotedCategory = Process;
+                PromotedOnly = true;
+                trigger OnAction()
+                var
+                    // vendBookLine: Record "Customer/Vendor Inv. Booking";
+                    codpaybleline: record "COD Payable/Receivable";
+                begin
+
+                    codpaybleline.Reset();
+                    codpaybleline.SetRange(Select, true);
+                    codpaybleline.SetRange("Lines Created", false);
+                    codpaybleline.SetRange("Entry Posted", false);
+                    //codpaybleline.SetFilter("COD Vendor Code", '<>%1', '');
+                    codpaybleline.SetFilter("COD Customer Code", '<>%1', '');  //PCPL-25/020523 above code comment
+                    IF codpaybleline.FindSet() then
+                        repeat
+                            codpaybleline.Select := false;
+                            codpaybleline.Modify();
+                        until codpaybleline.Next() = 0;
+                    Message('All Lines has been De-selected');
+                end;
+            }
+
+
         }
     }
     local procedure GenerateJournalVoucher(CODRecFilter: Record "COD Payable/Receivable")
@@ -127,6 +186,7 @@ page 50002 "COD Receivable List"
             GenJourLine.Insert(true);
             GenJourLine."Document No." := CODRecFilter."AVN Voucher No.";//NoSeriesMgt.GetNextNo('JOURNALV', Rec."Posting Date", false);
             GenJourLine."Account Type" := GenJourLine."Account Type"::Customer;
+            GenJourLine."External Document No." := CODRecFilter."Tracking No";
             GenJourLine.validate("Account No.", CODRecFilter."COD Customer Code");
             GenJourLine."Bal. Account Type" := GenJourLine."Bal. Account Type"::"G/L Account";
             GenJourLine.Validate("Bal. Account No.", CODRecFilter."Ledger Code");

@@ -135,7 +135,18 @@ codeunit 50000 "Event & Subscriber CU"
         //end;
     end;
 
-
+    /*
+     //PCPL-0070 18042023 <<
+     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Gen. Jnl.-Post Line", 'OnAfterInitVendLedgEntry', '', false, false)]
+     local procedure OnAfterInitVendLedgEntry(var VendorLedgerEntry: Record "Vendor Ledger Entry"; GenJournalLine: Record "Gen. Journal Line"; var GLRegister: Record "G/L Register");
+     begin
+         if GenJournalLine."Journal Template Name" = 'JOURNAL V' then begin
+             VendorLedgerEntry."External Document No." := GenJournalLine."External Document No.";
+             VendorLedgerEntry.Modify();
+         end;
+     end;
+     //PCPL-0070 18042023 >>
+     */
     var
         myInt: Integer;
 }

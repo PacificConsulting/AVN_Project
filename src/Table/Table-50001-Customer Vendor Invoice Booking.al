@@ -137,7 +137,7 @@ table 50001 "Customer/Vendor Inv. Booking"
         {
             Caption = 'Order Created';
             DataClassification = ToBeClassified;
-            Editable = false;
+            //Editable = false;
         }
         field(24; "Entry Posted"; Boolean)
         {

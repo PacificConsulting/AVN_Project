@@ -6,7 +6,7 @@ tableextension 50002 Vendor_ext extends Vendor
         {
             Caption = 'Shipment Status';
             DataClassification = ToBeClassified;
-            OptionMembers = Open,Delivered,"In Transit",RTO,"RTO In Transit";
+            OptionMembers = Open,Delivered,"In Transit",RTO,"RTO In Transit",Others;
             // OptionCaption = 'Open','Delivered','In Transit','RTO','RTO In Transit';
         }
     }

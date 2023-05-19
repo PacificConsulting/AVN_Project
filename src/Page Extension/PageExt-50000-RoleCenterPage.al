@@ -15,7 +15,7 @@ pageextension 50000 "Role Center for Page" extends "Order Processor Role Center"
                 {
                     action("COD Payable")
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = All;
                         Caption = 'COD Payable';
                         Image = EditList;
                         RunObject = xmlport 50000;
@@ -23,7 +23,7 @@ pageextension 50000 "Role Center for Page" extends "Order Processor Role Center"
                     }
                     action("COD Receivable")
                     {
-                        ApplicationArea = Basic, Suite;
+                        ApplicationArea = All;
                         Caption = 'COD Receivable';
                         Image = EditList;
                         RunObject = xmlport 50001;
