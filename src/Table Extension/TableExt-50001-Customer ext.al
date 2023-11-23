@@ -9,5 +9,7 @@ tableextension 50001 Customer_ext extends Customer
             OptionMembers = Open,Delivered,"In Transit",RTO,"RTO In Transit",Others;
             // OptionCaption = 'Open','Delivered','In Transit','RTO','RTO In Transit';
         }
+
+
     }
 }

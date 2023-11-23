@@ -250,6 +250,7 @@ page 50001 "Customer/Vendor Inv. Booking"
         NoSeriesMgt: Codeunit 396;
         CustInvBookSL: Record "Customer/Vendor Inv. Booking";
         AmtBeforeGST: Decimal;
+        Cust: Record 18;
     begin
 
         SalesHFilter.Reset();
@@ -268,6 +269,9 @@ page 50001 "Customer/Vendor Inv. Booking"
             SalesHeader.Validate("Shortcut Dimension 2 Code", CustInvBookFilter."Business Vertical (G2)");
             SalesHeader.Validate("Salesperson Code", CustInvBookFilter."Sales Person");
             SalesHeader.Validate("Posting No.", CustInvBookFilter."AVN Document No.");
+            if Cust.get(CustInvBookFilter."Customer Code") then
+                if Cust."GST Customer Type" <> Cust."GST Customer Type"::Unregistered then
+                    SalesHeader.Validate("Nature of Supply", SalesHeader."Nature of Supply"::B2B);  //PCPL
             SalesHeader.Modify();
         end;
 
