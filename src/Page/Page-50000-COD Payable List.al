@@ -16,6 +16,7 @@ page 50000 "COD Payable List"
                 field("AVN Voucher No."; Rec."AVN Voucher No.")
                 {
                     ToolTip = 'Specifies the value of the AVN Voucher No. field.';
+                    //
                 }
                 field("Posting Date"; Rec."Posting Date")
                 {
